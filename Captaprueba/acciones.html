@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Histórico de Acciones</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            margin: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            table-layout: fixed; /* Importante para evitar que se desborde */
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+            word-wrap: break-word; /* Ajusta el texto largo */
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        #tableContainer {
+            margin-top: 20px;
+            max-height: 500px;
+            overflow-y: auto; /* Scroll si es muy largo */
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Histórico Completo de Acciones</h1>
+
+    <button onclick="cargarAcciones()">Cargar Acciones</button>
+
+    <div id="tableContainer"></div>
+
+    <script>
+        async function cargarAcciones() {
+            const res = await fetch("http://localhost:3000/Acciones");
+            const acciones = await res.json();
+
+            renderTable(acciones);
+        }
+
+        function renderTable(data) {
+    if (!data || data.length === 0) {
+        document.getElementById("tableContainer").innerHTML =
+            "<p>No hay acciones registradas.</p>";
+        return;
+    }
+
+    // 📌 ORDENAR POR Aid (numérico)
+    data.sort((a, b) => {
+        const numA = parseInt(a.Aid.replace(/\D/g, ""));
+        const numB = parseInt(b.Aid.replace(/\D/g, ""));
+        return numA - numB;
+    });
+
+    let html = `
+        <table>
+            <tr>
+                <th>Aid</th>
+                <th>TicketId</th>
+                <th>Tipo de acción</th>
+                <th>De</th>
+                <th>A</th>
+                <th>Fecha</th>
+            </tr>
+    `;
+
+    data.forEach(a => {
+        html += `
+            <tr>
+                <td>${a.Aid}</td>
+                <td>${a.TicketId}</td>
+                <td>${a.Tipo_de_accion}</td>
+                <td>${JSON.stringify(a.From)}</td>
+                <td>${JSON.stringify(a.To)}</td>
+                <td>${new Date(a.Fecha).toLocaleString()}</td>
+            </tr>
+        `;
+    });
+
+    html += "</table>";
+
+    document.getElementById("tableContainer").innerHTML = html;
+}
+
+    </script>
+
+</body>
+</html>

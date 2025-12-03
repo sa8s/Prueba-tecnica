@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Consultas Requeridas — Reportes (Usando /Reporte)</title>
+<style>
+  body { font-family: Arial; padding:20px; }
+  input, select, button { margin:6px; padding:6px; }
+  table { width:100%; border-collapse: collapse; margin-top:8px; }
+  th, td { padding:8px; border:1px solid #ddd; text-align:left; }
+  th { background:#f0f0f0; }
+  .metrics { display:flex; gap:12px; flex-wrap:wrap; margin-top:8px; }
+  .metric { padding:8px; border:1px solid #eee; min-width:160px; }
+  pre { background:#f7f7f7; padding:8px; overflow:auto; max-height:200px; }
+</style>
+</head>
+<body>
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Consultas Requeridas — Reportes (Opción 1)</title>
+<style>
+  body{font-family:Arial,Helvetica,sans-serif;padding:18px;background:#f7f8fb}
+  label,button,select,input{margin:6px 4px;padding:6px}
+  table{width:100%;border-collapse:collapse;margin-top:10px}
+  th,td{padding:8px;border:1px solid #e6e6e6;text-align:left;font-size:13px}
+  th{background:#f0f2f5}
+  .metrics{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+  .metric{padding:8px;border:1px solid #eee;background:#fff;min-width:180px}
+  pre{background:#fff;padding:8px;border:1px solid #eee;max-height:200px;overflow:auto}
+</style>
+</head>
+<body>
+  <h2>Consultas Requeridas — (Opción 1: tickets con actividad en el rango)</h2>
+
+  <div>
+    <label>Desde: <input type="date" id="desde"></label>
+    <label>Hasta: <input type="date" id="hasta"></label>
+
+    <label>Clasificador:
+      <select id="classifierSelect">
+        <option value="">-- Todos --</option>
+      </select>
+    </label>
+
+    <label>Estado final a usar:
+      <select id="finalSel">
+        <option value="actual">Estado actual</option>
+        <option value="rango" selected>Estado final dentro del rango</option>
+        <option value="ambos">Ambos</option>
+      </select>
+    </label>
+
+    <button id="runBtn">Generar consultas</button>
+    <button id="clearBtn">Limpiar</button>
+  </div>
+
+  <div style="margin-top:8px">Estado: <span id="status">esperando</span></div>
+
+  <h3>Métricas</h3>
+  <div class="metrics" id="metrics"></div>
+
+  <h3>1) Lista de casos (tickets con actividad en el rango)</h3>
+  <div>Casos encontrados: <span id="casesCount">0</span></div>
+  <table id="casesTable">
+    <thead>
+      <tr><th>Tid</th><th>Nombre</th><th>Creado</th><th>Estado Inicial</th><th>Estado Final</th><th>Path (último Cid)</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <h3>2) Acciones en el rango (referencia)</h3>
+  <div>Acciones en rango: <span id="actionsCount">0</span></div>
+  <table id="actionsTable">
+    <thead><tr><th>Aid</th><th>TicketId</th><th>Tipo</th><th>From</th><th>To</th><th>Fecha</th></tr></thead>
+    <tbody></tbody>
+  </table>
+
+  <h3>Logs / debug</h3>
+  <pre id="log"></pre>
+
+<script>
+const API = "http://localhost:3000";
+const statusEl = document.getElementById("status");
+const logEl = document.getElementById("log");
+const classifierSelect = document.getElementById("classifierSelect");
+
+function log(msg){ console.log(msg); logEl.textContent += msg + "\n"; }
+function setStatus(s){ statusEl.textContent = s; }
+
+// parse various date forms
+function parseDate(v){
+  if (!v) return null;
+  if (v instanceof Date) return v;
+  if (typeof v === "string") {
+    const d = new Date(v);
+    if (!isNaN(d)) return d;
+    // try fallback
+    return new Date(Date.parse(v));
+  }
+  if (v.$date) return new Date(v.$date);
+  if (v["$date"]) return new Date(v["$date"]);
+  return new Date(v);
+}
+
+// fetch /Clasificadores and populate select (tree order)
+async function loadClasificadores(){
+  try{
+    const res = await fetch(`${API}/Clasificadores`);
+    if (!res.ok) { log("No se pudo cargar clasificadores"); return; }
+    const list = await res.json();
+    const map = new Map(list.map(n=>[n.Cid, {...n, children:[]}]));
+    for(const node of map.values()){
+      if (node.Padre && map.has(node.Padre)) map.get(node.Padre).children.push(node);
+    }
+    const roots = [];
+    for(const n of map.values()) if (!n.Padre || !map.has(n.Padre)) roots.push(n);
+    classifierSelect.innerHTML = `<option value="">-- Todos --</option>`;
+    function dfs(node, depth){
+      const opt = document.createElement("option");
+      opt.value = node.Cid;
+      opt.textContent = `${"-".repeat(depth)} ${node.Clasificador} (${node.Cid})`;
+      classifierSelect.appendChild(opt);
+      for(const ch of (node.children||[])) dfs(ch, depth+1);
+    }
+    roots.forEach(r=>dfs(r,0));
+  }catch(e){ console.error(e); log("Error cargando clasificadores: "+e.message); }
+}
+
+// fetch /Reporte with params
+async function fetchReporte(params){
+  const qs = new URLSearchParams(params || {}).toString();
+  const res = await fetch(`${API}/Reporte?${qs}`);
+  if (res.status === 404) return [];
+  if (!res.ok) throw new Error("Error fetching /Reporte: " + res.status);
+  return await res.json();
+}
+
+// fetch acciones with params
+async function fetchAcciones(params){
+  const qs = new URLSearchParams(params || {}).toString();
+  const res = await fetch(`${API}/Acciones?${qs}`);
+  if (res.status === 404) return [];
+  if (!res.ok) throw new Error("Error fetching Acciones");
+  return await res.json();
+}
+
+// fetch all tickets (paginated)
+async function fetchAllTickets(){
+  const all = [];
+  let p = 0;
+  while(true){
+    const res = await fetch(`${API}/Tickets?p=${p}`);
+    if (!res.ok) break;
+    const data = await res.json();
+    if (!Array.isArray(data) || data.length === 0) break;
+    all.push(...data);
+    if (data.length < 20) break;
+    p++;
+    if (p > 200) break;
+  }
+  return all;
+}
+
+// determine if action is reopen (closed/rejected -> open/in_progress)
+function isReopenAction(a){
+  if (!a || a.From===undefined || a.To===undefined) return false;
+  const from = String(a.From).toLowerCase();
+  const to = String(a.To).toLowerCase();
+  return (from === 'closed' || from === 'rejected') && (to === 'open' || to === 'in_progress' || to === 'abierto');
+}
+function isCloseAction(a){
+  if (!a || a.To===undefined) return false;
+  const to = String(a.To).toLowerCase();
+  return (to === 'closed' || to === 'rejected');
+}
+
+// MAIN runner
+document.getElementById("runBtn").addEventListener("click", async ()=>{
+  logEl.textContent = "";
+  setStatus("cargando datos...");
+  const desdeVal = document.getElementById("desde").value;
+  const hastaVal = document.getElementById("hasta").value;
+  if (!desdeVal || !hastaVal){ alert("Selecciona desde y hasta"); setStatus("esperando"); return; }
+
+  const desdeIso = new Date(desdeVal + "T00:00:00Z").toISOString();
+  const hastaIso = new Date(hastaVal + "T23:59:59Z").toISOString();
+  const classifier = document.getElementById("classifierSelect").value || "";
+  const finalSel = document.getElementById("finalSel").value || "rango";
+
+  try{
+    setStatus("obteniendo reporte (estado final dentro del rango)...");
+    // reporte que usa finalSel (por defecto usamos 'rango')
+    const reporte = await fetchReporte({ desde: desdeIso, hasta: hastaIso, final: finalSel });
+    log("reporte items: " + reporte.length);
+
+    setStatus("obteniendo tickets...");
+    const tickets = await fetchAllTickets();
+    const ticketMap = new Map(tickets.map(t => [t.Tid, t]));
+
+    setStatus("obteniendo acciones en rango...");
+    const accionesRango = await fetchAcciones({ desde: desdeIso, hasta: hastaIso });
+    setStatus("obteniendo acciones hasta endDate...");
+    const accionesHasta = await fetchAcciones({ hasta: hastaIso });
+
+    // Construir set de tickets que tuvieron actividad en el rango:
+    // actividad = acciones en rango OR creado en rango
+    const activeTidSet = new Set();
+    for(const a of accionesRango){ if (a.TicketId) activeTidSet.add(a.TicketId); }
+    // añadir tickets creados en rango
+    for(const t of tickets){
+      const c = parseDate(t.Creado_en);
+      if (!c) continue;
+      if (c >= new Date(desdeIso) && c <= new Date(hastaIso)) activeTidSet.add(t.Tid);
+    }
+
+    // Generar lista de casos basada en /Reporte pero filtrada por actividad + clasificador (último element del Path)
+    const listCases = reporte
+      .filter(r => activeTidSet.has(r.Tid))
+      .map(r => {
+        const t = ticketMap.get(r.Tid) || {};
+        // normalize Path to array
+        const pathArr = Array.isArray(t.Path) ? t.Path : (t.Path ? t.Path : []);
+        const lastCid = (pathArr.length ? pathArr[pathArr.length-1] : "");
+        return {
+          Tid: r.Tid,
+          Nombre: r.Nombre,
+          Creado_en: t.Creado_en,
+          EstadoInicial: r.EstadoInicial,
+          EstadoFinal: r.EstadoFinal,
+          PathArr: pathArr,
+          LastCid: lastCid
+        };
+      })
+      .filter(item => {
+        if (!classifier) return true;
+        return item.LastCid === classifier; // comparar con el último Cid del path
+      });
+
+    // METRICAS
+    // 1) Abiertos al inicio (rango) -> número de tickets cuyo EstadoInicial es open/in_progress (usando reporte)
+    const abiertosInicio = reporte.filter(r=>{
+      // solo contar los que tuvieron actividad y pasan filtro classifier (consistent with listCases)
+      // but user wanted ingresos changed to "numero de tickets abiertos en el estado inicial"
+      // we'll compute over reporte items that are in activeTidSet (and classifier)
+      if (!activeTidSet.has(r.Tid)) return false;
+      const t = ticketMap.get(r.Tid) || {};
+      const pathArr = Array.isArray(t.Path) ? t.Path : (t.Path ? t.Path : []);
+      const lastCid = (pathArr.length ? pathArr[pathArr.length-1] : "");
+      if (classifier && lastCid !== classifier) return false;
+      const ei = String(r.EstadoInicial || "").toLowerCase();
+      return ei === 'open' || ei === 'in_progress' || ei === 'abierto';
+    }).length;
+
+    // 2) Cierres (rango): cantidad de items en reporte (filtrados por actividad+classifier) con EstadoFinal closed/rejected
+    const closesInRange = reporte.filter(r=>{
+      if (!activeTidSet.has(r.Tid)) return false;
+      const t = ticketMap.get(r.Tid) || {};
+      const lastCid = (Array.isArray(t.Path)&&t.Path.length) ? t.Path[t.Path.length-1] : "";
+      if (classifier && lastCid !== classifier) return false;
+      const ef = String(r.EstadoFinal || "").toLowerCase();
+      return ef === 'closed' || ef === 'rejected';
+    }).length;
+
+    // 3) Reaperturas (rango): en reporte, EstadoInicial closed/rejected -> EstadoFinal open/in_progress (y filtrado por actividad+classifier)
+    const reopensInRange = reporte.filter(r=>{
+      if (!activeTidSet.has(r.Tid)) return false;
+      const t = ticketMap.get(r.Tid) || {};
+      const lastCid = (Array.isArray(t.Path)&&t.Path.length) ? t.Path[t.Path.length-1] : "";
+      if (classifier && lastCid !== classifier) return false;
+      const ei = String(r.EstadoInicial || "").toLowerCase();
+      const ef = String(r.EstadoFinal || "").toLowerCase();
+      return (ei === 'closed' || ei === 'rejected') && (ef === 'open' || ef === 'in_progress' || ef === 'abierto');
+    }).length;
+
+    // 4) Cierres (total hasta endDate): pedimos reporte con final=actual hasta endDate y contamos closed/rejected (aplicar classifier)
+    const reporteHastaActual = await fetchReporte({ hasta: hastaIso, final: "actual" });
+    const closesTotal = reporteHastaActual.filter(r=>{
+      const t = ticketMap.get(r.Tid) || {};
+      const lastCid = (Array.isArray(t.Path)&&t.Path.length) ? t.Path[t.Path.length-1] : "";
+      if (classifier && lastCid !== classifier) return false;
+      const ef = String(r.EstadoFinal || "").toLowerCase();
+      return ef === 'closed' || ef === 'rejected';
+    }).length;
+
+    // 5) Reaperturas (total hasta endDate): contar acciones en accionesHasta que sean reopens (aplicar classifier by ticket's lastCid)
+    // build map tid->lastCid to filter quickly
+    const lastCidMap = new Map();
+    for(const t of tickets){
+      const arr = Array.isArray(t.Path) ? t.Path : (t.Path ? t.Path : []);
+      lastCidMap.set(t.Tid, (arr.length ? arr[arr.length-1] : ""));
+    }
+    const reopensTotal = accionesHasta.filter(a=>{
+      if (!isReopenAction(a)) return false;
+      const tid = a.TicketId;
+      if (!tid) return false;
+      if (classifier && lastCidMap.get(tid) !== classifier) return false;
+      return true;
+    }).length;
+
+    // 6) Tickets que actualmente son reaperturas:
+    // usar reporteActual (final=actual) and accionesHasta: if current state open/in_progress AND has some reopen action in accionesHasta
+    const reporteActual = await fetchReporte({ final: "actual" });
+    const accionesPorTicketHasta = new Map();
+    for(const a of accionesHasta){ if (!a.TicketId) continue; if (!accionesPorTicketHasta.has(a.TicketId)) accionesPorTicketHasta.set(a.TicketId,[]); accionesPorTicketHasta.get(a.TicketId).push(a); }
+
+    let ticketsCurrentlyReopenCount = 0;
+    reporteActual.forEach(r=>{
+      const ef = String(r.EstadoFinal || "").toLowerCase();
+      if (!(ef === 'open' || ef === 'in_progress' || ef === 'abierto')) return;
+      const tid = r.Tid;
+      // classifier filter
+      if (classifier && lastCidMap.get(tid) !== classifier) return;
+      const acts = accionesPorTicketHasta.get(tid) || [];
+      if (acts.some(isReopenAction)) ticketsCurrentlyReopenCount++;
+    });
+
+    // 7) Tickets cerrados actualmente (reporteActual)
+    const ticketsCurrentlyClosed = reporteActual.filter(r=>{
+      const ef = String(r.EstadoFinal || "").toLowerCase();
+      if (!(ef === 'closed' || ef === 'rejected')) return false;
+      if (classifier && lastCidMap.get(r.Tid) !== classifier) return false;
+      return true;
+    }).length;
+
+    // 8) Tickets abiertos al final del período: usar 'reporte' (final=rango) y contar EstadoFinal open/in_progress (aplicar classifier)
+    const ticketsOpenAtEnd = reporte.filter(r=>{
+      const ef = String(r.EstadoFinal || "").toLowerCase();
+      if (!(ef === 'open' || ef === 'in_progress' || ef === 'abierto')) return false;
+      if (!activeTidSet.has(r.Tid)) return false; // only tickets with activity
+      if (classifier && lastCidMap.get(r.Tid) !== classifier) return false;
+      return true;
+    }).length;
+
+    // Ecuación:
+    const formulaLeft = abiertosInicio - closesInRange + reopensInRange;
+    const formulaRight = ticketsOpenAtEnd;
+
+    // RENDER METRICS
+    const metricsEl = document.getElementById("metrics");
+    metricsEl.innerHTML = "";
+    function addMetric(title, value){
+      const d = document.createElement("div");
+      d.className = "metric";
+      d.innerHTML = `<div style="font-size:12px;color:#444">${title}</div><div style="font-weight:700;font-size:16px">${value}</div>`;
+      metricsEl.appendChild(d);
+    }
+    addMetric("Abiertos al inicio (rango)", abiertosInicio);
+    addMetric("Cierres (rango)", closesInRange);
+    addMetric("Reaperturas (rango)", reopensInRange);
+    addMetric("Cierres (total hasta endDate)", closesTotal);
+    addMetric("Reaperturas (total hasta endDate)", reopensTotal);
+    addMetric("Tickets que actualmente son reaperturas", ticketsCurrentlyReopenCount);
+    addMetric("Tickets cerrados actualmente", ticketsCurrentlyClosed);
+    addMetric("Tickets abiertos al final del período", ticketsOpenAtEnd);
+    addMetric("Ecuación (AbiertosInicio - Cierres + Reaperturas)", `${formulaLeft} === ${formulaRight} → ${formulaLeft === formulaRight ? "OK" : "NO OK"}`);
+
+    // RENDER LIST CASES
+    const tbodyCases = document.querySelector("#casesTable tbody");
+    tbodyCases.innerHTML = "";
+    document.getElementById("casesCount").textContent = listCases.length;
+    for(const c of listCases){
+      const created = parseDate(c.Creado_en);
+      const createdStr = created ? created.toLocaleString() : "";
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${c.Tid}</td>
+                      <td>${c.Nombre||""}</td>
+                      <td>${createdStr}</td>
+                      <td>${c.EstadoInicial||"—"}</td>
+                      <td>${c.EstadoFinal||"—"}</td>
+                      <td>${c.LastCid||""}</td>`;
+      tbodyCases.appendChild(tr);
+    }
+
+    // RENDER ACCIONES EN RANGO (tabla)
+    const tbodyActions = document.querySelector("#actionsTable tbody");
+    tbodyActions.innerHTML = "";
+    document.getElementById("actionsCount").textContent = accionesRango.length;
+    // sort by fecha
+    accionesRango.sort((a,b)=> {
+      const da = parseDate(a.Fecha);
+      const db = parseDate(b.Fecha);
+      return (da?da.getTime():0) - (db?db.getTime():0);
+    });
+    for(const a of accionesRango){
+      const dateStr = parseDate(a.Fecha) ? parseDate(a.Fecha).toLocaleString() : (a.Fecha||"");
+      const from = Array.isArray(a.From)? JSON.stringify(a.From) : (a.From||"");
+      const to   = Array.isArray(a.To)?   JSON.stringify(a.To)   : (a.To||"");
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${a.Aid||""}</td><td>${a.TicketId||""}</td><td>${a.Tipo_de_accion||a.Tipo||""}</td><td>${from}</td><td>${to}</td><td>${dateStr}</td>`;
+      tbodyActions.appendChild(tr);
+    }
+
+    setStatus("listo");
+    log(`OK — reporte:${reporte.length} tickets totales:${tickets.length} casosFiltrados:${listCases.length}`);
+  }catch(err){
+    console.error(err);
+    setStatus("error");
+    log("Error: " + (err.message||err));
+    alert("Ocurrió un error — revisa consola / logs.");
+  }
+});
+
+// Clear
+document.getElementById("clearBtn").addEventListener("click", ()=>{
+  document.getElementById("desde").value = "";
+  document.getElementById("hasta").value = "";
+  document.getElementById("classifierSelect").value = "";
+  document.getElementById("finalSel").value = "rango";
+  document.getElementById("metrics").innerHTML = "";
+  document.querySelector("#casesTable tbody").innerHTML = "";
+  document.querySelector("#actionsTable tbody").innerHTML = "";
+  document.getElementById("actionsCount").textContent = "0";
+  document.getElementById("casesCount").textContent = "0";
+  logEl.textContent = "";
+  setStatus("limpio");
+});
+
+// init
+loadClasificadores();
+</script>
+</body>
+</html>
+
+</html>

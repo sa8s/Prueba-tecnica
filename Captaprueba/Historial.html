@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Histórico de Acciones por Ticket</title>
+    <style>
+        td {
+            word-wrap: break-word;
+            word-break: break-word;
+            white-space: normal;
+            max-width: 250px;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f2f2;
+            padding: 30px;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 900px;
+            margin: auto;
+            box-shadow: 0 0 10px #aaa;
+        }
+
+        input, select {
+            padding: 8px;
+            margin: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+        }
+
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #eee;
+        }
+
+        #noData {
+            margin-top: 20px;
+            color: gray;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Histórico de acciones de un Ticket</h2>
+
+    <div>
+        <input id="tid" placeholder="Tid del ticket (Ej: T123)" />
+
+        <select id="tipo">
+            <option value="">-- Tipo de acción (todos) --</option>
+            <option value="Creación de Ticket">Creación de Ticket</option>
+            <option value="Cambio de estado">Cambio de estado</option>
+            <option value="Cambio de prioridad">Cambio de prioridad</option>
+            <option value="Cambio de asignación">Cambio de asignación</option>
+            <option value="Cambio de nombre">Cambio de nombre</option>
+            <option value="Cambio de descripción">Cambio de descripción</option>
+            <option value="Comentario agregado">Comentario agregado</option>
+        </select>
+
+        <br>
+
+        Desde: <input type="date" id="desde">
+        Hasta: <input type="date" id="hasta">
+
+        <button onclick="buscar()">Buscar</button>
+        <button onclick="window.location.href='acciones.html'">Lista De Todas Las Acciones</button>
+
+    </div>
+
+    <p id="noData" style="display:none;">No hay acciones para esa búsqueda.</p>
+
+    <table id="tablaAcciones" style="display:none;">
+        <thead>
+            <tr>
+                <th>Aid</th>
+                <th>Tid</th>
+                <th>Tipo</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Fecha</th>
+            </tr>
+        </thead>
+        <tbody id="tbodyAcciones"></tbody>
+    </table>
+</div>
+
+<script>
+async function buscar() {
+    const tid = document.getElementById("tid").value.trim();
+    const tipo = document.getElementById("tipo").value;
+    const desde = document.getElementById("desde").value;
+    const hasta = document.getElementById("hasta").value;
+
+    const tabla = document.getElementById("tablaAcciones");
+    const tbody = document.getElementById("tbodyAcciones");
+    const noData = document.getElementById("noData");
+
+    tbody.innerHTML = "";
+    tabla.style.display = "none";
+    noData.style.display = "none";
+
+    // Construir URL según haya Tid o no
+    let url = tid 
+        ? `http://localhost:3000/Acciones/Ticket/${encodeURIComponent(tid)}?`
+        : `http://localhost:3000/Acciones?`;
+
+    // Agregar filtros
+    if (tipo) url += `tipo=${encodeURIComponent(tipo)}&`;
+    if (desde) url += `desde=${encodeURIComponent(desde)}&`;
+    if (hasta) url += `hasta=${encodeURIComponent(hasta)}&`;
+
+    try {
+        const res = await fetch(url);
+
+        if (res.status === 404) {
+            noData.style.display = "block";
+            return;
+        }
+
+        if (!res.ok) {
+            throw new Error("Error en la consulta");
+        }
+
+        const data = await res.json();
+
+        if (!Array.isArray(data) || data.length === 0) {
+            noData.style.display = "block";
+            return;
+        }
+
+        // Renderizar acciones
+        data.forEach(a => {
+            const tr = document.createElement("tr");
+
+            // Asegurarnos de mostrar arrays/objects legibles en From/To
+            const fromVal = Array.isArray(a.From) ? a.From.join(", ") : (a.From ?? "—");
+            const toVal = Array.isArray(a.To) ? a.To.join(", ") : (a.To ?? "—");
+
+            // Fecha puede venir como objeto {$date: ...} o como string; manejar ambos casos
+            let fechaText = "—";
+            if (a.Fecha) {
+                try {
+                    const d = new Date(a.Fecha);
+                    if (!isNaN(d)) fechaText = d.toLocaleString();
+                    else if (a.Fecha.$date) fechaText = new Date(a.Fecha.$date).toLocaleString();
+                } catch (e) {
+                    fechaText = String(a.Fecha);
+                }
+            }
+
+            tr.innerHTML = `
+                <td>${a.Aid ?? "—"}</td>
+                <td>${a.TicketId ?? a.Tid ?? "—"}</td>
+                <td>${a.Tipo_de_accion ?? a.type ?? "—"}</td>
+                <td>${fromVal}</td>
+                <td>${toVal}</td>
+                <td>${fechaText}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        tabla.style.display = "table";
+
+    } catch (e) {
+        alert("Error consultando acciones: " + (e.message || e));
+        console.error(e);
+    }
+}
+</script>
+
+</body>
+</html>

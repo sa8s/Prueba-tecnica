@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Reportes de Tickets</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            margin: 0;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+            font-size: 24px;
+        }
+        
+        .report-section {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #2b7cff;
+            color: #333;
+        }
+        
+        .filters {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2b7cff;
+        }
+        
+        .filter-row {
+            margin-bottom: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        label {
+            font-weight: 600;
+            min-width: 120px;
+            color: #555;
+        }
+        
+        input, select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #2b7cff;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background: #2b7cff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        
+        button:hover {
+            background: #1f63d6;
+        }
+        
+        button.secondary {
+            background: #6c757d;
+        }
+        
+        button.secondary:hover {
+            background: #5a6268;
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 30px;
+            color: #777;
+            font-style: italic;
+            background: #f9f9f9;
+            border-radius: 6px;
+            margin-top: 20px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #2b7cff;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        th {
+            background: #f0f0f0;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #ddd;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            word-wrap: break-word;
+            max-width: 250px;
+        }
+        
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-open {
+            background: #e6f4ea;
+            color: #137333;
+        }
+        
+        .status-in_progress {
+            background: #fef7e0;
+            color: #b06000;
+        }
+        
+        .status-closed {
+            background: #fce8e6;
+            color: #c5221f;
+        }
+        
+        .error-message {
+            background: #fce8e6;
+            color: #c5221f;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 20px 0;
+            border-left: 4px solid #c5221f;
+        }
+        
+        @media (max-width: 768px) {
+            .filter-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            input, select {
+                width: 100%;
+                min-width: auto;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sistema de Reportes de Tickets</h1>
+        
+        <!-- Reporte Principal -->
+        <div class="report-section">
+            <h2>Reporte Principal de Tickets</h2>
+            
+            <div class="filters">
+                <div class="filter-row">
+                    <label for="desde">Desde:</label>
+                    <input type="date" id="desde">
+                    <label for="hasta">Hasta:</label>
+                    <input type="date" id="hasta">
+                </div>
+                
+                <div class="filter-row">
+                    <label for="estado">Estado:</label>
+                    <select id="estado">
+                        <option value="">-- Cualquiera --</option>
+                        <option value="open">Abierto</option>
+                        <option value="in_progress">En progreso</option>
+                        <option value="closed">Cerrado</option>
+                    </select>
+                    
+                    <label for="final">Criterio Estado Final:</label>
+                    <select id="final">
+                        <option value="actual">Estado actual</option>
+                        <option value="rango">Estado final dentro del rango</option>
+                        <option value="ambos">Ambos</option>
+                    </select>
+                </div>
+                
+                <div class="filter-row">
+                    <label for="clasificador">Clasificador:</label>
+                    <select id="clasificador">
+                        <option value="">-- Todos --</option>
+                    </select>
+                </div>
+                
+                <div class="buttons">
+                    <button onclick="buscarReporte()">Buscar Reporte</button>
+                    <button onclick="limpiarFiltrosReporte()" class="secondary">Limpiar Filtros</button>
+                </div>
+            </div>
+            
+            <div class="no-data" id="noDataReporte" style="display:none;">
+                No hay tickets para esa búsqueda.
+            </div>
+            
+            <div class="loading" id="loadingReporte" style="display:none;">
+                Cargando datos del reporte...
+            </div>
+            
+            <table id="tablaReporte" style="display:none;">
+                <thead>
+                    <tr>
+                        <th>ID Ticket</th>
+                        <th>Título</th>
+                        <th>Estado Inicial</th>
+                        <th>Estado Final</th>
+                        <th>Última Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="tbodyReporte"></tbody>
+            </table>
+        </div>
+        
+        <!-- Histórico de Acciones -->
+        <div class="report-section">
+            <h2>Histórico de Acciones</h2>
+            
+            <div class="filters">
+                <div class="filter-row">
+                    <label for="tid">ID Ticket:</label>
+                    <input id="tid" placeholder="Ej: T123">
+                </div>
+                
+                <div class="filter-row">
+                    <label for="tipoAccion">Tipo de Acción:</label>
+                    <select id="tipoAccion">
+                        <option value="">-- Todos --</option>
+                        <option value="Creación de Ticket">Creación de Ticket</option>
+                        <option value="Cambio de estado">Cambio de estado</option>
+                        <option value="Cambio de prioridad">Cambio de prioridad</option>
+                        <option value="Cambio de asignación">Cambio de asignación</option>
+                        <option value="Cambio de nombre">Cambio de nombre</option>
+                        <option value="Cambio de descripción">Cambio de descripción</option>
+                        <option value="Comentario agregado">Comentario agregado</option>
+                    </select>
+                </div>
+                
+                <div class="filter-row">
+                    <label for="desdeAcciones">Desde:</label>
+                    <input type="date" id="desdeAcciones">
+                    <label for="hastaAcciones">Hasta:</label>
+                    <input type="date" id="hastaAcciones">
+                </div>
+                
+                <div class="buttons">
+                    <button onclick="buscarHistorial()">Buscar Historial</button>
+                    <button onclick="limpiarFiltrosHistorial()" class="secondary">Limpiar Filtros</button>
+                    <button onclick="window.location.href='acciones.html'">Lista De Todas Las Acciones</button>
+                </div>
+            </div>
+            
+            <div class="no-data" id="noDataHistorial" style="display:none;">
+                No hay acciones para esa búsqueda.
+            </div>
+            
+            <div class="loading" id="loadingHistorial" style="display:none;">
+                Cargando historial de acciones...
+            </div>
+            
+            <table id="tablaHistorial" style="display:none;">
+                <thead>
+                    <tr>
+                        <th>ID Acción</th>
+                        <th>ID Ticket</th>
+                        <th>Tipo</th>
+                        <th>Desde</th>
+                        <th>Hasta</th>
+                        <th>Fecha</th>
+                    </tr>
+                </thead>
+                <tbody id="tbodyHistorial"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // =============================
+        // Cargar clasificadores al inicio
+        // =============================
+        window.onload = async function() {
+            try {
+                // Cargar clasificadores
+                const res = await fetch("http://localhost:3000/Clasificadores");
+                const clasificadores = await res.json();
+
+                const select = document.getElementById("clasificador");
+
+                clasificadores.forEach(c => {
+                    const opt = document.createElement("option");
+                    opt.value = c.Cid;
+                    opt.textContent = `${c.Clasificador} (${c.Cid})`;
+                    select.appendChild(opt);
+                });
+
+                // TODOS los campos de fecha se quedan VACÍOS por defecto
+                // No establecer ninguna fecha por defecto
+                
+            } catch (err) {
+                console.error("Error cargando clasificadores", err);
+                mostrarError("Error cargando clasificadores. Verifica la conexión con el servidor.");
+            }
+        };
+
+        // =============================
+        // BUSCAR REPORTE DE TICKETS
+        // =============================
+        async function buscarReporte() {
+            const desde = document.getElementById("desde").value;
+            const hasta = document.getElementById("hasta").value;
+            const estado = document.getElementById("estado").value;
+            const finalSel = document.getElementById("final").value;
+            const clasificadorCid = document.getElementById("clasificador").value;
+
+            const tabla = document.getElementById("tablaReporte");
+            const tbody = document.getElementById("tbodyReporte");
+            const noData = document.getElementById("noDataReporte");
+            const loading = document.getElementById("loadingReporte");
+
+            // Mostrar loading, ocultar otros
+            loading.style.display = "block";
+            tbody.innerHTML = "";
+            tabla.style.display = "none";
+            noData.style.display = "none";
+
+            // Construir URL
+            let url = `http://localhost:3000/Reporte?`;
+
+            if (desde) url += `desde=${desde}&`;
+            if (hasta) url += `hasta=${hasta}&`;
+            if (estado) url += `estado=${estado}&`;
+            if (finalSel) url += `final=${finalSel}&`;
+
+            try {
+                const res = await fetch(url);
+
+                // Ocultar loading
+                loading.style.display = "none";
+
+                if (res.status === 404) {
+                    noData.style.display = "block";
+                    return;
+                }
+
+                if (!res.ok) {
+                    throw new Error(`Error ${res.status}: ${res.statusText}`);
+                }
+
+                let data = await res.json();
+
+                // Filtrar por clasificador (Path)
+                if (clasificadorCid) {
+                    data = data.filter(t => 
+                        Array.isArray(t.Path) && t.Path.includes(parseInt(clasificadorCid))
+                    );
+                }
+
+                if (data.length === 0) {
+                    noData.style.display = "block";
+                    return;
+                }
+
+                // Renderizar resultados
+                data.forEach(t => {
+                    const tr = document.createElement("tr");
+
+                    // Crear badge de estado
+                    let estadoBadge = "";
+                    if (t.EstadoInicial) {
+                        const estadoClass = t.EstadoInicial.replace(' ', '_');
+                        estadoBadge = `<span class="status-badge status-${estadoClass}">${t.EstadoInicial}</span>`;
+                    }
+
+                    let estadoFinalBadge = "";
+                    if (t.EstadoFinal) {
+                        const estadoClass = t.EstadoFinal.replace(' ', '_');
+                        estadoFinalBadge = `<span class="status-badge status-${estadoClass}">${t.EstadoFinal}</span>`;
+                    }
+
+                    // Formatear fecha de última acción
+                    let ultimaAccionFormateada = "—";
+                    if (t.UltimaAccion) {
+                        try {
+                            const fecha = new Date(t.UltimaAccion);
+                            if (!isNaN(fecha)) {
+                                ultimaAccionFormateada = fecha.toLocaleDateString('es-ES', {
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                });
+                            }
+                        } catch (e) {
+                            ultimaAccionFormateada = t.UltimaAccion;
+                        }
+                    }
+
+                    tr.innerHTML = `
+                        <td><strong>${t.Tid || "—"}</strong></td>
+                        <td>${t.Nombre || "—"}</td>
+                        <td>${estadoBadge || "—"}</td>
+                        <td>${estadoFinalBadge || "—"}</td>
+                        <td>${ultimaAccionFormateada}</td>
+                    `;
+
+                    tbody.appendChild(tr);
+                });
+
+                tabla.style.display = "table";
+
+            } catch (err) {
+                loading.style.display = "none";
+                console.error("Error en búsqueda de reporte:", err);
+                mostrarError("Error al consultar reporte: " + err.message);
+            }
+        }
+
+        // =============================
+        // BUSCAR HISTORIAL DE ACCIONES
+        // =============================
+        async function buscarHistorial() {
+            const tid = document.getElementById("tid").value.trim();
+            const tipo = document.getElementById("tipoAccion").value;
+            const desde = document.getElementById("desdeAcciones").value;
+            const hasta = document.getElementById("hastaAcciones").value;
+
+            const tabla = document.getElementById("tablaHistorial");
+            const tbody = document.getElementById("tbodyHistorial");
+            const noData = document.getElementById("noDataHistorial");
+            const loading = document.getElementById("loadingHistorial");
+
+            // Mostrar loading, ocultar otros
+            loading.style.display = "block";
+            tbody.innerHTML = "";
+            tabla.style.display = "none";
+            noData.style.display = "none";
+
+            // Construir URL según haya Tid o no
+            let url = tid 
+                ? `http://localhost:3000/Acciones/Ticket/${encodeURIComponent(tid)}?`
+                : `http://localhost:3000/Acciones?`;
+
+            // Agregar filtros
+            if (tipo) url += `tipo=${encodeURIComponent(tipo)}&`;
+            if (desde) url += `desde=${encodeURIComponent(desde)}&`;
+            if (hasta) url += `hasta=${encodeURIComponent(hasta)}&`;
+
+            try {
+                const res = await fetch(url);
+
+                // Ocultar loading
+                loading.style.display = "none";
+
+                if (res.status === 404) {
+                    noData.style.display = "block";
+                    return;
+                }
+
+                if (!res.ok) {
+                    throw new Error(`Error ${res.status}: ${res.statusText}`);
+                }
+
+                const data = await res.json();
+
+                if (!Array.isArray(data) || data.length === 0) {
+                    noData.style.display = "block";
+                    return;
+                }
+
+                // Renderizar acciones
+                data.forEach(a => {
+                    const tr = document.createElement("tr");
+
+                    // Asegurarnos de mostrar arrays/objects legibles en From/To
+                    const fromVal = Array.isArray(a.From) ? a.From.join(", ") : (a.From ?? "—");
+                    const toVal = Array.isArray(a.To) ? a.To.join(", ") : (a.To ?? "—");
+
+                    // Formatear fecha
+                    let fechaText = "—";
+                    if (a.Fecha) {
+                        try {
+                            const d = new Date(a.Fecha);
+                            if (!isNaN(d)) {
+                                fechaText = d.toLocaleDateString('es-ES', {
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                });
+                            }
+                            else if (a.Fecha.$date) {
+                                const dateObj = new Date(a.Fecha.$date);
+                                fechaText = dateObj.toLocaleDateString('es-ES', {
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                });
+                            }
+                        } catch (e) {
+                            fechaText = String(a.Fecha);
+                        }
+                    }
+
+                    tr.innerHTML = `
+                        <td>${a.Aid ?? "—"}</td>
+                        <td><strong>${a.TicketId ?? a.Tid ?? "—"}</strong></td>
+                        <td>${a.Tipo_de_accion ?? a.type ?? "—"}</td>
+                        <td>${fromVal}</td>
+                        <td>${toVal}</td>
+                        <td>${fechaText}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                tabla.style.display = "table";
+
+            } catch (e) {
+                loading.style.display = "none";
+                console.error("Error consultando acciones:", e);
+                mostrarError("Error consultando acciones: " + (e.message || e));
+            }
+        }
+
+        // =============================
+        // FUNCIONES AUXILIARES
+        // =============================
+        
+        function limpiarFiltrosReporte() {
+            // Vaciar TODOS los campos del Reporte Principal
+            document.getElementById("desde").value = "";
+            document.getElementById("hasta").value = "";
+            document.getElementById("estado").value = "";
+            document.getElementById("final").value = "actual";
+            document.getElementById("clasificador").value = "";
+            
+            document.getElementById("tablaReporte").style.display = "none";
+            document.getElementById("noDataReporte").style.display = "none";
+        }
+
+        function limpiarFiltrosHistorial() {
+            // Vaciar TODOS los campos del Historial
+            document.getElementById("tid").value = "";
+            document.getElementById("tipoAccion").value = "";
+            document.getElementById("desdeAcciones").value = "";
+            document.getElementById("hastaAcciones").value = "";
+            
+            document.getElementById("tablaHistorial").style.display = "none";
+            document.getElementById("noDataHistorial").style.display = "none";
+        }
+
+        function mostrarError(mensaje) {
+            // Crear elemento de error temporal
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.innerHTML = `<strong>Error:</strong> ${mensaje}`;
+            
+            // Insertar al inicio del contenedor
+            const container = document.querySelector('.container');
+            container.insertBefore(errorDiv, container.firstChild);
+            
+            // Auto-eliminar después de 5 segundos
+            setTimeout(() => {
+                if (errorDiv.parentNode) {
+                    errorDiv.parentNode.removeChild(errorDiv);
+                }
+            }, 5000);
+        }
+
+        // Permitir búsqueda con Enter
+        document.addEventListener('DOMContentLoaded', function() {
+            // Para reporte
+            const inputsReporte = ['desde', 'hasta', 'estado', 'final', 'clasificador'];
+            inputsReporte.forEach(id => {
+                const input = document.getElementById(id);
+                if (input) {
+                    input.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            buscarReporte();
+                        }
+                    });
+                }
+            });
+            
+            // Para historial
+            const inputsHistorial = ['tid', 'tipoAccion', 'desdeAcciones', 'hastaAcciones'];
+            inputsHistorial.forEach(id => {
+                const input = document.getElementById(id);
+                if (input) {
+                    input.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            buscarHistorial();
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

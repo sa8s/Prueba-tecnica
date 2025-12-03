@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Árbol de Clasificadores - Sistema Completo</title>
+<style>
+  * {
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f5f6f8;
+    padding: 20px;
+    margin: 0;
+  }
+  
+  .app-container {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  
+  /* Panel izquierdo - Árbol */
+  .tree-panel {
+    background: #fff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0,0,0,.06);
+    flex: 1;
+  }
+  
+  /* Panel derecho - Gestión */
+  .management-panel {
+    background: #fff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0,0,0,.06);
+    flex: 1;
+  }
+  
+  h1, h2, h3 {
+    color: #333;
+    margin-top: 0;
+  }
+  
+  h1 {
+    font-size: 24px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #2b7cff;
+  }
+  
+  h2 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    color: #444;
+  }
+  
+  h3 {
+    font-size: 16px;
+    margin-bottom: 12px;
+    color: #555;
+  }
+  
+  /* Estilos del árbol */
+  .tools {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  
+  button {
+    padding: 8px 15px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    background: #f7f7f7;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+  
+  button:hover {
+    background: #eaeaea;
+  }
+  
+  button.primary {
+    background: #2b7cff;
+    color: #fff;
+    border-color: #1f63d6;
+  }
+  
+  button.primary:hover {
+    background: #1f63d6;
+  }
+  
+  .tree {
+    list-style: none;
+    padding-left: 18px;
+  }
+  
+  .node {
+    margin: 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .toggle {
+    width: 20px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    background: #eee;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  .label {
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .meta {
+    color: #777;
+    font-size: 12px;
+    margin-left: 6px;
+  }
+  
+  .actions {
+    margin-left: auto;
+    display: flex;
+    gap: 8px;
+  }
+  
+  .actions button {
+    padding: 4px 10px;
+    font-size: 13px;
+    background: #f0f0f0;
+  }
+  
+  .child-list {
+    margin-left: 18px;
+    padding-left: 10px;
+    border-left: 1px dashed #d0d0d0;
+  }
+  
+  .empty {
+    color: #777;
+    margin-top: 12px;
+    font-style: italic;
+  }
+  
+  /* Estilos de tickets */
+  .ticket-list {
+    margin: 8px 0 8px 28px;
+    padding: 8px 12px;
+    border-left: 2px solid #ddd;
+    background: #f9f9f9;
+    border-radius: 4px;
+  }
+  
+  .ticket-item {
+    padding: 6px 8px;
+    border-radius: 4px;
+    margin-bottom: 6px;
+    font-size: 13px;
+    color: #fff;
+  }
+  
+  .p-low {
+    background: #2ecc71;
+  }
+  
+  .p-medium {
+    background: #d4ac0d;
+  }
+  
+  .p-high {
+    background: #e74c3c;
+  }
+  
+  /* Estilos de gestión */
+  .form-section {
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .form-section:last-of-type {
+    border-bottom: none;
+  }
+  
+  input, select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #555;
+  }
+  
+  .form-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+  }
+  
+  .form-row .form-group {
+    flex: 1;
+  }
+  
+  .form-row button {
+    height: 42px;
+    white-space: nowrap;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+  }
+  
+  th, td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+  }
+  
+  th {
+    background: #f5f7fa;
+    font-weight: 600;
+    color: #444;
+  }
+  
+  tr:hover {
+    background-color: #f9f9f9;
+  }
+  
+  .msg {
+    font-size: 14px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    margin-left: 10px;
+  }
+  
+  /* Responsive */
+  @media (min-width: 992px) {
+    .app-container {
+      flex-direction: row;
+    }
+    
+    .tree-panel {
+      max-width: 60%;
+    }
+    
+    .management-panel {
+      max-width: 40%;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .form-row {
+      flex-direction: column;
+    }
+    
+    .actions {
+      flex-wrap: wrap;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Panel izquierdo: Árbol de clasificadores -->
+    <div class="tree-panel">
+      <h1>Árbol de Clasificadores</h1>
+
+      <div class="tools">
+        <button class="primary" onclick="crearRaiz()">Crear raíz</button>
+        <button onclick="cargar()">Refrescar árbol</button>
+        <span id="status" class="msg"></span>
+      </div>
+
+      <div id="treeContainer">
+        <p class="empty">Cargando clasificadores...</p>
+      </div>
+    </div>
+    
+    <!-- Panel derecho: Gestión de clasificadores -->
+    <div class="management-panel">
+      <h2>Gestión de Clasificadores</h2>
+      
+      <!-- Formulario de creación -->
+      <div class="form-section">
+        <h3>Crear nuevo clasificador</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="nuevoNombre">Nombre del clasificador</label>
+            <input type="text" id="nuevoNombre" placeholder="Ej: Soporte Técnico">
+          </div>
+          
+          <div class="form-group">
+            <label for="nuevoPadre">Clasificador padre (opcional)</label>
+            <select id="nuevoPadre">
+              <option value="">-- Raíz (sin padre) --</option>
+            </select>
+          </div>
+          
+          <button onclick="crearClasificador()">Crear</button>
+        </div>
+      </div>
+      
+      <!-- Formulario de actualización -->
+      <div class="form-section">
+        <h3>Actualizar clasificador</h3>
+        <div class="form-group">
+          <label for="updateCid">Seleccionar clasificador</label>
+          <select id="updateCid"></select>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="updateNombre">Nuevo nombre (opcional)</label>
+            <input type="text" id="updateNombre" placeholder="Nuevo nombre">
+          </div>
+          
+          <div class="form-group">
+            <label for="updatePadre">Nuevo padre (opcional)</label>
+            <select id="updatePadre">
+              <option value="">-- Raíz (sin padre) --</option>
+            </select>
+          </div>
+          
+          <button onclick="actualizarClasificador()">Actualizar</button>
+        </div>
+      </div>
+      
+      <!-- Tabla de clasificadores -->
+      <div class="form-section">
+        <h3>Listado de clasificadores</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Padre</th>
+              <th>Hijos</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+<script>
+// Constantes de API
+const API = "http://localhost:3000/Clasificadores";
+const API_TICKETS = "http://localhost:3000/Tickets";
+
+// Variables globales
+let allTickets = [];
+
+/* ==================== FUNCIONES DEL ÁRBOL ==================== */
+
+/* -------------------- CARGA DE TICKETS -------------------- */
+async function fetchTickets() {
+  try {
+    const res = await fetch(API_TICKETS);
+    if (!res.ok) throw new Error("No se pudieron cargar tickets");
+    allTickets = await res.json();
+  } catch(err) {
+    console.error("Error cargando tickets:", err);
+    allTickets = [];
+  }
+}
+
+/* -------------------- CARGAR ÁRBOL -------------------- */
+async function cargar() {
+  setStatus("");
+  const container = document.getElementById("treeContainer");
+  container.innerHTML = '<p class="empty">Cargando clasificadores...</p>';
+
+  await fetchTickets();
+
+  try {
+    const res = await fetch(API);
+    if (!res.ok) throw new Error("No se pudo obtener clasificadores");
+    const list = await res.json();
+
+    const map = new Map();
+    list.forEach(n => map.set(n.Cid, {...n, children: []}));
+
+    const roots = [];
+    for (const node of map.values()) {
+      if (node.Padre && map.has(node.Padre)) {
+        map.get(node.Padre).children.push(node);
+      } else {
+        roots.push(node);
+      }
+    }
+
+    container.innerHTML = "";
+    if (roots.length === 0) {
+      container.innerHTML = '<p class="empty">No hay clasificadores aún.</p>';
+      return;
+    }
+
+    const ul = document.createElement("ul");
+    ul.className = "tree";
+    roots.forEach(root => ul.appendChild(renderNode(root)));
+    container.appendChild(ul);
+
+  } catch (err) {
+    console.error(err);
+    document.getElementById("treeContainer").innerHTML =
+      `<p class="danger">Error cargando clasificadores.</p>`;
+    setStatus("Error");
+  }
+}
+
+/* -------------------- OBTENER TICKETS POR CLASIFICADOR -------------------- */
+function getTicketsForClassifier(Cid) {
+  return allTickets.filter(t => Array.isArray(t.Path) && (Cid == t.Path[t.Path.length - 1]));
+}
+
+/* -------------------- RENDERIZAR NODO -------------------- */
+function renderNode(node) {
+  const li = document.createElement("li");
+  li.style.listStyle = "none";
+
+  const nodeDiv = document.createElement("div");
+  nodeDiv.className = "node";
+
+  const toggle = document.createElement("div");
+  toggle.className = "toggle";
+  toggle.textContent = node.children && node.children.length ? "+" : "";
+
+  toggle.onclick = () => {
+    const childUl = li.querySelector(".child-list");
+    if (childUl) {
+      childUl.style.display =
+        childUl.style.display === "none" ? "block" : "none";
+      toggle.textContent =
+        childUl.style.display === "none" ? "+" : "−";
+    }
+
+    const ticketDiv = li.querySelector(".ticket-list");
+    if (ticketDiv) {
+      ticketDiv.style.display =
+        ticketDiv.style.display === "none" ? "block" : "none";
+    }
+  };
+
+  const label = document.createElement("span");
+  label.className = "label";
+  label.textContent = node.Clasificador;
+
+  const meta = document.createElement("span");
+  meta.className = "meta";
+  meta.textContent = `(${node.Cid})`;
+
+  /* Botones */
+  const actions = document.createElement("div");
+  actions.className = "actions";
+
+  const btnAdd = document.createElement("button");
+  btnAdd.textContent = "Agregar hijo";
+  btnAdd.onclick = () => crearHijo(node.Cid);
+
+  const btnEdit = document.createElement("button");
+  btnEdit.textContent = "Editar";
+  btnEdit.onclick = () => editarNodo(node.Cid, node.Clasificador, node.Padre);
+
+  const btnDelete = document.createElement("button");
+  btnDelete.textContent = "Eliminar";
+  btnDelete.onclick = () => eliminarNodo(node.Cid);
+
+  actions.append(btnAdd, btnEdit, btnDelete);
+
+  nodeDiv.append(toggle, label, meta, actions);
+
+  li.appendChild(nodeDiv);
+
+  /* Lista de tickets asociados */
+  const tickets = getTicketsForClassifier(node.Cid);
+
+  if (tickets.length > 0) {
+    const ticketList = document.createElement("div");
+    ticketList.className = "ticket-list";
+
+    tickets.forEach(t => {
+      const div = document.createElement("div");
+      let priority = String(t.Prioridad || "").toLowerCase();
+
+      let prClass = "p-low";
+      if (priority === "medium") prClass = "p-medium";
+      if (priority === "high") prClass = "p-high";
+
+      div.className = `ticket-item ${prClass}`;
+      div.textContent = `${t.Tid} — ${t.Nombre} (${t.Estado})`;
+      ticketList.appendChild(div);
+    });
+
+    li.appendChild(ticketList);
+  }
+
+  /* Hijos */
+  if (node.children && node.children.length) {
+    const childUl = document.createElement("ul");
+    childUl.className = "child-list";
+    node.children.forEach(ch => childUl.appendChild(renderNode(ch)));
+    li.appendChild(childUl);
+    toggle.textContent = "−";
+  }
+
+  return li;
+}
+
+/* ==================== CRUD DEL ÁRBOL ==================== */
+
+function setStatus(text, isError = false) {
+  const s = document.getElementById("status");
+  s.textContent = text;
+  s.style.color = isError ? "#b20000" : "green";
+  if (text) setTimeout(() => s.textContent = "", 3000);
+}
+
+async function crearRaiz() {
+  const nombre = prompt("Nombre de la nueva raíz:");
+  if (!nombre) return;
+  await fetch(API, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({Clasificador: nombre, Padre: null, Hijos: []})
+  });
+  cargar();
+  cargarTodo(); // Actualizar también la tabla
+}
+
+async function crearHijo(parentCid) {
+  const nombre = prompt("Nombre del hijo:");
+  if (!nombre) return;
+  await fetch(API, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({Clasificador: nombre, Padre: parentCid, Hijos: []})
+  });
+  cargar();
+  cargarTodo(); // Actualizar también la tabla
+}
+
+async function editarNodo(Cid, name, padre) {
+  const nuevoNombre = prompt("Nuevo nombre:", name);
+  if (nuevoNombre === null) return;
+  const nuevoPadre = prompt("Cid del nuevo padre (vacío=raíz)", padre || "");
+
+  await fetch(`${API}/${Cid}`, {
+    method: "PATCH",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      Clasificador: nuevoNombre,
+      Padre: (nuevoPadre === "" ? null : nuevoPadre)
+    })
+  });
+  cargar();
+  cargarTodo(); // Actualizar también la tabla
+}
+
+async function eliminarNodo(Cid) {
+  if (!confirm("¿Eliminar clasificador " + Cid + "?")) return;
+  await fetch(`${API}/${Cid}`, {method: "DELETE"});
+  cargar();
+  cargarTodo(); // Actualizar también la tabla
+}
+
+/* ==================== FUNCIONES DE GESTIÓN ==================== */
+
+// Cargar todo al iniciar
+window.onload = function() {
+  cargar();  // Cargar árbol
+  cargarTodo(); // Cargar tabla y selects
+};
+
+async function cargarTodo() {
+  const res = await fetch(API);
+  const data = await res.json();
+
+  llenarTabla(data);
+  llenarSelectsPadre(data);
+  llenarSelectsActualizar(data);
+}
+
+// Llenar tabla
+function llenarTabla(data) {
+  const tbody = document.getElementById("tbody");
+  tbody.innerHTML = "";
+
+  data.forEach(c => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${c.Cid}</td>
+      <td>${c.Clasificador}</td>
+      <td>${c.Padre || "—"}</td>
+      <td>${c.Hijos.join(", ") || "—"}</td>
+    `;
+
+    tbody.appendChild(tr);
+  });
+}
+
+// Llenar selects para elegir padre
+function llenarSelectsPadre(data) {
+  const sel = document.getElementById("nuevoPadre");
+  sel.innerHTML = `<option value="">-- Raíz (sin padre) --</option>`;
+
+  data.forEach(c => {
+    sel.innerHTML += `<option value="${c.Cid}">${c.Clasificador}</option>`;
+  });
+}
+
+function llenarSelectsActualizar(data) {
+  const selCid = document.getElementById("updateCid");
+  const selPadre = document.getElementById("updatePadre");
+
+  selCid.innerHTML = "";
+  selPadre.innerHTML = `<option value="">-- Raíz (sin padre) --</option>`;
+
+  data.forEach(c => {
+    selCid.innerHTML += `<option value="${c.Cid}">${c.Cid} - ${c.Clasificador}</option>`;
+    selPadre.innerHTML += `<option value="${c.Cid}">${c.Clasificador}</option>`;
+  });
+}
+
+// Crear clasificador
+async function crearClasificador() {
+  const nombre = document.getElementById("nuevoNombre").value.trim();
+  const padre = document.getElementById("nuevoPadre").value || null;
+
+  if (!nombre) return alert("Debe escribir un nombre");
+
+  const nuevo = {
+    Clasificador: nombre,
+    Padre: padre,
+    Hijos: []
+  };
+
+  const res = await fetch(API, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(nuevo)
+  });
+
+  if (res.ok) {
+    alert("Clasificador creado");
+    document.getElementById("nuevoNombre").value = "";
+    document.getElementById("nuevoPadre").value = "";
+    
+    // Recargar ambos paneles
+    cargar();
+    cargarTodo();
+  } else {
+    alert("Error al crear");
+  }
+}
+
+// Actualizar clasificador
+async function actualizarClasificador() {
+  const Cid = document.getElementById("updateCid").value;
+  const nombreNuevo = document.getElementById("updateNombre").value.trim();
+  const padreNuevo = document.getElementById("updatePadre").value || null;
+
+  if (!Cid) return alert("Seleccione un clasificador");
+
+  const updates = {};
+  if (nombreNuevo) updates.Clasificador = nombreNuevo;
+  updates.Padre = padreNuevo;
+
+  const res = await fetch(`${API}/${Cid}`, {
+    method: "PATCH",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(updates)
+  });
+
+  if (res.ok) {
+    alert("Clasificador actualizado");
+    document.getElementById("updateNombre").value = "";
+    
+    // Recargar ambos paneles
+    cargar();
+    cargarTodo();
+  } else {
+    alert("Error al actualizar");
+  }
+}
+</script>
+</body>
+</html>

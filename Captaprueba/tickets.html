@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de Tickets</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2c3e50;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
+        
+        h2 {
+            margin-top: 30px;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .section {
+            background: white;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-left: 4px solid #3498db;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        input[type="text"],
+        input[type="date"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        
+        input[type="text"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.1);
+        }
+        
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        
+        button:hover {
+            background: #2980b9;
+        }
+        
+        .result-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            border-left: 4px solid #27ae60;
+            font-family: monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .result-box.error {
+            border-left-color: #e74c3c;
+            background: #fdf2f2;
+        }
+        
+        .result-box.loading {
+            border-left-color: #f39c12;
+            background: #fef9e7;
+        }
+        
+        hr {
+            border: none;
+            height: 1px;
+            background: #eee;
+            margin: 30px 0;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .status-success {
+            background: #d5f4e6;
+            color: #27ae60;
+        }
+        
+        .status-error {
+            background: #fadbd8;
+            color: #e74c3c;
+        }
+        
+        .success-message {
+            color: #27ae60;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>📋 Gestión de Tickets</h1>
+    
+    <!-- ===========================
+           CREAR TICKET
+    ============================ -->
+    <div class="section">
+        <h2>➕ Crear Nuevo Ticket</h2>
+        
+        <div class="form-group">
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" placeholder="Nombre del ticket">
+        </div>
+        
+        <div class="form-group">
+            <label for="descripcion">Descripción:</label>
+            <textarea id="descripcion" placeholder="Descripción del ticket"></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="estado">Estado:</label>
+            <select id="estado">
+                <option value="open">Abierto</option>
+                <option value="in_progress">En Progreso</option>
+                <option value="closed">Cerrado</option>
+                <option value="rejected">Rechazado</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="asignado">Asignado a (separar por comas):</label>
+            <input type="text" id="asignado" placeholder="usuario1, usuario2, ...">
+        </div>
+        
+        <div class="form-group">
+            <label for="prioridad">Prioridad:</label>
+            <select id="prioridad">
+                <option value="low">Baja</option>
+                <option value="medium">Media</option>
+                <option value="high">Alta</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="pathSelectNuevo">Ubicación (clasificador):</label>
+            <select id="pathSelectNuevo">
+                <option value="">-- Cargando clasificadores... --</option>
+            </select>
+        </div>
+        
+        <button onclick="crearTicket()">Crear Ticket</button>
+        
+        <div id="resultado" class="result-box" style="display:none;"></div>
+    </div>
+    
+    <!-- ===========================
+           ACTUALIZAR TICKET
+    ============================ -->
+    <div class="section">
+        <h2>✏️ Actualizar Ticket</h2>
+        
+        <div class="form-group">
+            <label for="tidUpdate">ID del Ticket (Tid):</label>
+            <input type="text" id="tidUpdate" placeholder="Ej: T001">
+        </div>
+        
+        <button onclick="cargarDatosUpdate()">Cargar Datos del Ticket</button>
+        
+        <div id="updateSection" style="display:none; margin-top: 20px;">
+            <div class="form-group">
+                <label for="pathSelectUpdate">Ubicación (clasificador):</label>
+                <select id="pathSelectUpdate">
+                    <option value="">-- Sin ubicación (raíz) --</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="nombreUpdate">Nombre:</label>
+                <input type="text" id="nombreUpdate">
+            </div>
+            
+            <div class="form-group">
+                <label for="descripcionUpdate">Descripción:</label>
+                <textarea id="descripcionUpdate"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="estadoUpdate">Estado:</label>
+                <select id="estadoUpdate">
+                    <option value="open">Abierto</option>
+                    <option value="in_progress">En Progreso</option>
+                    <option value="closed">Cerrado</option>
+                    <option value="rejected">Rechazado</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="asignadoUpdate">Asignado a (separar por comas):</label>
+                <input type="text" id="asignadoUpdate">
+            </div>
+            
+            <div class="form-group">
+                <label for="prioridadUpdate">Prioridad:</label>
+                <select id="prioridadUpdate">
+                    <option value="low">Baja</option>
+                    <option value="medium">Media</option>
+                    <option value="high">Alta</option>
+                </select>
+            </div>
+            
+            <button onclick="actualizar()">Actualizar Ticket</button>
+        </div>
+        
+        <div id="resultadoUpdate" class="result-box" style="display:none;"></div>
+    </div>
+    
+    <!-- ===========================
+           COMENTAR TICKET
+    ============================ -->
+    <div class="section">
+        <h2>💬 Agregar Comentario a Ticket</h2>
+        
+        <div class="form-group">
+            <label for="tidBuscar">ID del Ticket (Tid):</label>
+            <input type="text" id="tidBuscar" placeholder="Ej: T001">
+        </div>
+        
+        <button onclick="cargarTicket()">Cargar Ticket</button>
+        
+        <div id="datosTicket" style="display:none; margin-top: 20px;">
+            <h3>📄 Datos del Ticket</h3>
+            
+            <div class="form-group">
+                <label>Nombre:</label>
+                <input type="text" id="nombreTicket" disabled>
+            </div>
+            
+            <div class="form-group">
+                <label>Descripción:</label>
+                <textarea id="descripcionTicket" disabled></textarea>
+            </div>
+            
+            <h3>✍️ Nuevo Comentario</h3>
+            
+            <div class="form-group">
+                <label for="comentador">Comentador:</label>
+                <input type="text" id="comentador" placeholder="Tu nombre">
+            </div>
+            
+            <div class="form-group">
+                <label for="comentario">Comentario:</label>
+                <textarea id="comentario" placeholder="Escribe tu comentario aquí..."></textarea>
+            </div>
+            
+            <button onclick="comentar()">Enviar Comentario</button>
+        </div>
+        
+        <div id="resultadoComentario" class="result-box" style="display:none;"></div>
+    </div>
+
+    <script>
+        // ===========================
+        // FUNCIONES PARA CLASIFICADORES
+        // ===========================
+        
+        // Obtener clasificadores
+        async function fetchClasificadores() {
+            try {
+                const res = await fetch("http://localhost:3000/Clasificadores");
+                if (!res.ok) throw new Error("Error al cargar clasificadores");
+                return await res.json();
+            } catch (error) {
+                console.error("Error fetching clasificadores:", error);
+                return [];
+            }
+        }
+
+        // Construir estructuras de paths
+        function buildPathStructures(list) {
+            const map = new Map(list.map(n => [n.Cid, { ...n, children: [] }]));
+            
+            // Asignar hijos
+            for (const node of map.values()) {
+                if (node.Padre && map.has(node.Padre)) {
+                    map.get(node.Padre).children.push(node);
+                }
+            }
+            
+            // Encontrar raíces
+            const roots = [];
+            for (const node of map.values()) {
+                if (!node.Padre || !map.has(node.Padre)) roots.push(node);
+            }
+
+            // DFS para generar array ordenado y paths
+            const ordered = [];
+            const paths = {};
+
+            function dfs(node, acc) {
+                const path = [...acc, node.Cid];
+                ordered.push({ 
+                    Cid: node.Cid, 
+                    label: node.Clasificador, 
+                    depth: acc.length, 
+                    path 
+                });
+                paths[node.Cid] = path;
+                for (const ch of (node.children || [])) dfs(ch, path);
+            }
+
+            roots.forEach(r => dfs(r, []));
+            return { ordered, paths };
+        }
+
+        // Rellenar selects con clasificadores
+        async function populateClassifierSelects() {
+            try {
+                const list = await fetchClasificadores();
+                const { ordered } = buildPathStructures(list);
+
+                // Selects
+                const selNuevo = document.getElementById("pathSelectNuevo");
+                const selUpdate = document.getElementById("pathSelectUpdate");
+
+                if (!selNuevo || !selUpdate) return;
+
+                // Limpiar selects
+                selNuevo.innerHTML = '<option value="">-- Sin ubicación (raíz) --</option>';
+                selUpdate.innerHTML = '<option value="">-- Sin ubicación (raíz) --</option>';
+
+                // Agregar opciones
+                for (const o of ordered) {
+                    const opt = document.createElement("option");
+                    opt.value = o.Cid;
+                    opt.innerText = `${"  ".repeat(o.depth)}${o.label}`;
+                    selNuevo.appendChild(opt);
+
+                    const opt2 = opt.cloneNode(true);
+                    selUpdate.appendChild(opt2);
+                }
+                
+                return ordered;
+            } catch (error) {
+                console.error("Error populating classifier selects:", error);
+                const selNuevo = document.getElementById("pathSelectNuevo");
+                const selUpdate = document.getElementById("pathSelectUpdate");
+                
+                if (selNuevo) {
+                    selNuevo.innerHTML = '<option value="">-- Error cargando clasificadores --</option>';
+                }
+                if (selUpdate) {
+                    selUpdate.innerHTML = '<option value="">-- Error cargando clasificadores --</option>';
+                }
+            }
+        }
+
+        // ===========================
+        // CREAR TICKET
+        // ===========================
+        async function crearTicket() {
+            const resultadoDiv = document.getElementById("resultado");
+            resultadoDiv.style.display = "none";
+            
+            // Validación básica
+            const nombre = document.getElementById("nombre").value.trim();
+            if (!nombre) {
+                mostrarResultado("resultado", "❌ Por favor ingresa un nombre para el ticket", true);
+                return;
+            }
+            
+            // Mostrar loading
+            mostrarResultado("resultado", "🔄 Creando ticket...", false, true);
+            
+            try {
+                const selectedCid = document.getElementById("pathSelectNuevo").value;
+                
+                const data = {
+                    Nombre: nombre,
+                    Descripcion: document.getElementById("descripcion").value || "",
+                    Estado: document.getElementById("estado").value,
+                    Asignado_a: document.getElementById("asignado").value ? 
+                        document.getElementById("asignado").value.split(",").map(s => s.trim()).filter(Boolean) : [],
+                    Prioridad: document.getElementById("prioridad").value,
+                    selectedCid
+                };
+
+                const res = await fetch("http://localhost:3000/Tickets", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await res.json();
+                
+                if (res.ok) {
+                    // Mostrar éxito
+                    mostrarResultado("resultado", `✅ Ticket creado exitosamente!\n\nID: ${result.Tid || "N/A"}\nNombre: ${result.Nombre || nombre}\nEstado: ${result.Estado || data.Estado}\nPrioridad: ${result.Prioridad || data.Prioridad}`, false);
+                    
+                    // Limpiar formulario
+                    document.getElementById("nombre").value = "";
+                    document.getElementById("descripcion").value = "";
+                    document.getElementById("asignado").value = "";
+                } else {
+                    mostrarResultado("resultado", `❌ Error al crear ticket: ${JSON.stringify(result, null, 2)}`, true);
+                }
+            } catch (error) {
+                mostrarResultado("resultado", `❌ Error de conexión: ${error.message}`, true);
+            }
+        }
+
+        // ===========================
+        // ACTUALIZAR TICKET
+        // ===========================
+        async function cargarDatosUpdate() {
+            const tidUpdate = document.getElementById("tidUpdate").value.trim();
+            if (!tidUpdate) {
+                alert("Por favor ingresa un ID de ticket");
+                return;
+            }
+            
+            // Mostrar loading
+            const resultadoDiv = document.getElementById("resultadoUpdate");
+            resultadoDiv.style.display = "block";
+            resultadoDiv.className = "result-box loading";
+            resultadoDiv.innerText = "🔄 Cargando datos del ticket...";
+            
+            try {
+                const res = await fetch(`http://localhost:3000/Tickets/${tidUpdate}`);
+                const ticket = await res.json();
+
+                if (!res.ok || ticket.error) {
+                    resultadoDiv.className = "result-box error";
+                    resultadoDiv.innerText = `❌ No se encontró el Ticket: ${tidUpdate}`;
+                    document.getElementById("updateSection").style.display = "none";
+                    return;
+                }
+
+                // Ocultar resultado y mostrar formulario
+                resultadoDiv.style.display = "none";
+                document.getElementById("updateSection").style.display = "block";
+
+                // Llenar campos
+                document.getElementById("nombreUpdate").value = ticket.Nombre || "";
+                document.getElementById("descripcionUpdate").value = ticket.Descripcion || "";
+                document.getElementById("estadoUpdate").value = ticket.Estado || "open";
+                document.getElementById("prioridadUpdate").value = ticket.Prioridad || "medium";
+                document.getElementById("asignadoUpdate").value = ticket.Asignado_a?.join(",") || "";
+
+                // Asegurar que los selects estén poblados
+                await populateClassifierSelects();
+
+                // Preseleccionar clasificador si existe
+                if (ticket.Path && ticket.Path.length) {
+                    const lastCid = ticket.Path[ticket.Path.length - 1];
+                    document.getElementById("pathSelectUpdate").value = lastCid;
+                } else {
+                    document.getElementById("pathSelectUpdate").value = "";
+                }
+                
+            } catch (error) {
+                resultadoDiv.className = "result-box error";
+                resultadoDiv.innerText = `❌ Error al cargar ticket: ${error.message}`;
+            }
+        }
+
+        async function actualizar() {
+            const tidUpdate = document.getElementById("tidUpdate").value.trim();
+            if (!tidUpdate) {
+                alert("Por favor ingresa un ID de ticket");
+                return;
+            }
+            
+            const resultadoDiv = document.getElementById("resultadoUpdate");
+            resultadoDiv.style.display = "block";
+            resultadoDiv.className = "result-box loading";
+            resultadoDiv.innerText = "🔄 Actualizando ticket...";
+            
+            try {
+                const selectedCid = document.getElementById("pathSelectUpdate").value || null;
+
+                const data = {
+                    Nombre: document.getElementById("nombreUpdate").value || "",
+                    Descripcion: document.getElementById("descripcionUpdate").value || "",
+                    Estado: document.getElementById("estadoUpdate").value,
+                    Asignado_a: document.getElementById("asignadoUpdate").value ? 
+                        document.getElementById("asignadoUpdate").value.split(",").map(s => s.trim()).filter(Boolean) : [],
+                    Prioridad: document.getElementById("prioridadUpdate").value,
+                    selectedCid
+                };
+
+                const res = await fetch(`http://localhost:3000/Tickets/${tidUpdate}`, {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await res.json();
+                
+                if (res.ok) {
+                    resultadoDiv.className = "result-box";
+                    resultadoDiv.innerText = `✅ Ticket actualizado exitosamente!\n\nID: ${tidUpdate}\nNombre: ${data.Nombre}\nEstado: ${data.Estado}\nPrioridad: ${data.Prioridad}`;
+                } else {
+                    resultadoDiv.className = "result-box error";
+                    resultadoDiv.innerText = `❌ Error al actualizar: ${JSON.stringify(result, null, 2)}`;
+                }
+            } catch (error) {
+                resultadoDiv.className = "result-box error";
+                resultadoDiv.innerText = `❌ Error de conexión: ${error.message}`;
+            }
+        }
+
+        // ===========================
+        // COMENTAR TICKET
+        // ===========================
+        async function cargarTicket() {
+            const tidBuscar = document.getElementById("tidBuscar").value.trim();
+            if (!tidBuscar) {
+                alert("Por favor ingresa un ID de ticket");
+                return;
+            }
+            
+            const resultadoDiv = document.getElementById("resultadoComentario");
+            resultadoDiv.style.display = "block";
+            resultadoDiv.className = "result-box loading";
+            resultadoDiv.innerText = "🔄 Cargando ticket...";
+            
+            try {
+                const res = await fetch(`http://localhost:3000/Tickets/${tidBuscar}`);
+                const ticket = await res.json();
+
+                if (!res.ok || ticket.error) {
+                    resultadoDiv.className = "result-box error";
+                    resultadoDiv.innerText = `❌ No se encontró el Ticket: ${tidBuscar}`;
+                    document.getElementById("datosTicket").style.display = "none";
+                    return;
+                }
+
+                // Ocultar resultado y mostrar formulario
+                resultadoDiv.style.display = "none";
+                document.getElementById("datosTicket").style.display = "block";
+
+                // Llenar campos
+                document.getElementById("nombreTicket").value = ticket.Nombre || "";
+                document.getElementById("descripcionTicket").value = ticket.Descripcion || "";
+                
+            } catch (error) {
+                resultadoDiv.className = "result-box error";
+                resultadoDiv.innerText = `❌ Error al cargar ticket: ${error.message}`;
+            }
+        }
+
+        async function comentar() {
+            const tidBuscar = document.getElementById("tidBuscar").value.trim();
+            const comentador = document.getElementById("comentador").value.trim();
+            const comentario = document.getElementById("comentario").value.trim();
+            
+            if (!comentador || !comentario) {
+                alert("Por favor completa todos los campos del comentario");
+                return;
+            }
+            
+            const resultadoDiv = document.getElementById("resultadoComentario");
+            resultadoDiv.style.display = "block";
+            resultadoDiv.className = "result-box loading";
+            resultadoDiv.innerText = "🔄 Enviando comentario...";
+            
+            try {
+                const data = {
+                    Comentador: comentador,
+                    Comentario: comentario
+                };
+
+                const res = await fetch(`http://localhost:3000/Tickets/${tidBuscar}/Comentario`, {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await res.json();
+                
+                if (res.ok) {
+                    resultadoDiv.className = "result-box";
+                    resultadoDiv.innerText = `✅ Comentario agregado exitosamente!\n\nTicket: ${tidBuscar}\nComentador: ${comentador}\nComentario: ${comentario}`;
+                    
+                    // Limpiar campos del comentario
+                    document.getElementById("comentador").value = "";
+                    document.getElementById("comentario").value = "";
+                } else {
+                    resultadoDiv.className = "result-box error";
+                    resultadoDiv.innerText = `❌ Error al agregar comentario: ${JSON.stringify(result, null, 2)}`;
+                }
+            } catch (error) {
+                resultadoDiv.className = "result-box error";
+                resultadoDiv.innerText = `❌ Error de conexión: ${error.message}`;
+            }
+        }
+
+        // ===========================
+        // FUNCIÓN AUXILIAR PARA MOSTRAR RESULTADOS
+        // ===========================
+        function mostrarResultado(elementId, mensaje, esError = false, esLoading = false) {
+            const elemento = document.getElementById(elementId);
+            elemento.style.display = "block";
+            elemento.innerText = mensaje;
+            
+            if (esLoading) {
+                elemento.className = "result-box loading";
+            } else if (esError) {
+                elemento.className = "result-box error";
+            } else {
+                elemento.className = "result-box";
+            }
+        }
+
+        // ===========================
+        // INICIALIZACIÓN
+        // ===========================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Poblar selects de clasificadores
+            populateClassifierSelects();
+            
+            // Permitir enviar formularios con Enter
+            document.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+                    e.preventDefault();
+                    const activeSection = document.activeElement.closest('.section');
+                    if (activeSection) {
+                        const button = activeSection.querySelector('button');
+                        if (button) button.click();
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
