@@ -1,0 +1,1 @@
+Los archivos .json que se encuentran aquí son unos datos generados por y para simular los eventos con diferentes tickets, acciones y nodos para comprobar el funcionamiento de los modulos y funciones tanto por parte de la interfaz como por la de su conexión con la base de datos.
