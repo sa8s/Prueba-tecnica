@@ -1,0 +1,88 @@
+[{
+  "_id": {
+    "$oid": "6930415ed541bf2e043b1c74"
+  },
+  "Cid": "C000",
+  "Clasificador": "Root",
+  "Padre": null,
+  "Hijos": [
+    "C001",
+    "C002"
+  ]
+},
+{
+  "_id": {
+    "$oid": "6930415ed541bf2e043b1c75"
+  },
+  "Cid": "C001",
+  "Clasificador": "Soporte Técnico",
+  "Padre": "C000",
+  "Hijos": [
+    "C003",
+    "C004"
+  ]
+},
+{
+  "_id": {
+    "$oid": "6930415ed541bf2e043b1c76"
+  },
+  "Cid": "C002",
+  "Clasificador": "Servicios Comerciales",
+  "Padre": "C000",
+  "Hijos": [
+    "C005"
+  ]
+},
+{
+  "_id": {
+    "$oid": "6930415ed541bf2e043b1c77"
+  },
+  "Cid": "C003",
+  "Clasificador": "Conectividad",
+  "Padre": "C001",
+  "Hijos": [
+    "C006"
+  ]
+},
+{
+  "_id": {
+    "$oid": "6930415ed541bf2e043b1c78"
+  },
+  "Cid": "C004",
+  "Clasificador": "Software",
+  "Padre": "C001",
+  "Hijos": []
+},
+{
+  "_id": {
+    "$oid": "6930415ed541bf2e043b1c79"
+  },
+  "Cid": "C005",
+  "Clasificador": "Empresarial",
+  "Padre": "C002",
+  "Hijos": [
+    "C007"
+  ]
+},
+{
+  "_id": {
+    "$oid": "6930415ed541bf2e043b1c7a"
+  },
+  "Cid": "C006",
+  "Clasificador": "Fibra Óptica",
+  "Padre": "C003",
+  "Hijos": [
+    "C008"
+  ]
+},
+{
+  "_id": {
+    "$oid": "6930415ed541bf2e043b1c7b"
+  },
+  "Cid": "C007",
+  "Clasificador": "Grandes Cuentas",
+  "Padre": "C005",
+  "Hijos": [
+    "C008"
+  ]
+}]

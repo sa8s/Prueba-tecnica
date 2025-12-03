@@ -1,0 +1,252 @@
+[{
+  "_id": {
+    "$oid": "693042e0d541bf2e043b1cc3"
+  },
+  "Tid": "T001",
+  "Nombre": "Sin conexión en oficina",
+  "Descripcion": "Cliente empresarial reporta caída total.",
+  "Estado": "open",
+  "Creado_en": {
+    "$date": "2025-01-02T08:20:00.000Z"
+  },
+  "Ultima_actualizacion": {
+    "$date": "2025-01-05T12:45:00.000Z"
+  },
+  "Path": [
+    "C000",
+    "C002",
+    "C005",
+    "C007"
+  ],
+  "Asignado_a": [
+    "agent_5"
+  ],
+  "Prioridad": "high",
+  "Comentarios": []
+},
+{
+  "_id": {
+    "$oid": "693042e0d541bf2e043b1cc4"
+  },
+  "Tid": "T002",
+  "Nombre": "Falla intermitente wawa",
+  "Descripcion": "Reporte de microcortes.",
+  "Estado": "closed",
+  "Creado_en": {
+    "$date": "2025-01-03T10:40:00.000Z"
+  },
+  "Ultima_actualizacion": {
+    "$date": "2025-12-03T15:46:31.447Z"
+  },
+  "Path": [
+    "C000",
+    "C001",
+    "C003",
+    "C006"
+  ],
+  "Asignado_a": [
+    "agent_2"
+  ],
+  "Prioridad": "medium",
+  "Comentarios": []
+},
+{
+  "_id": {
+    "$oid": "693042e0d541bf2e043b1cc5"
+  },
+  "Tid": "T003",
+  "Nombre": "Error en sistema contable",
+  "Descripcion": "Software no carga módulos.",
+  "Estado": "open",
+  "Creado_en": {
+    "$date": "2025-01-04T09:00:00.000Z"
+  },
+  "Ultima_actualizacion": {
+    "$date": "2025-01-07T11:00:00.000Z"
+  },
+  "Path": [
+    "C000",
+    "C001",
+    "C004"
+  ],
+  "Asignado_a": [
+    "agent_3"
+  ],
+  "Prioridad": "high",
+  "Comentarios": []
+},
+{
+  "_id": {
+    "$oid": "693042e0d541bf2e043b1cc6"
+  },
+  "Tid": "T004",
+  "Nombre": "Caída parcial de red",
+  "Descripcion": "Algunos equipos no reciben DHCP.",
+  "Estado": "closed",
+  "Creado_en": {
+    "$date": "2025-01-01T14:55:00.000Z"
+  },
+  "Ultima_actualizacion": {
+    "$date": "2025-01-03T08:20:00.000Z"
+  },
+  "Path": [
+    "C000",
+    "C001",
+    "C003"
+  ],
+  "Asignado_a": [
+    "agent_7"
+  ],
+  "Prioridad": "low",
+  "Comentarios": []
+},
+{
+  "_id": {
+    "$oid": "693042e0d541bf2e043b1cc7"
+  },
+  "Tid": "T005",
+  "Nombre": "Instalación de paquete empresarial",
+  "Descripcion": "Solicitan configuración inicial.",
+  "Estado": "in_progress",
+  "Creado_en": {
+    "$date": "2025-01-06T07:00:00.000Z"
+  },
+  "Ultima_actualizacion": {
+    "$date": "2025-01-08T17:30:00.000Z"
+  },
+  "Path": [
+    "C000",
+    "C002",
+    "C005"
+  ],
+  "Asignado_a": [
+    "agent_9"
+  ],
+  "Prioridad": "medium",
+  "Comentarios": []
+},
+{
+  "_id": {
+    "$oid": "693043a7d541bf2e043b1cc9"
+  },
+  "Tid": "T006",
+  "Nombre": "Falla en router empresarial",
+  "Descripcion": "Router principal pierde conectividad intermitente.",
+  "Estado": "in_progress",
+  "Creado_en": {
+    "$date": "2025-01-10T08:40:00.000Z"
+  },
+  "Ultima_actualizacion": {
+    "$date": "2025-01-14T12:50:00.000Z"
+  },
+  "Path": [
+    "C000",
+    "C001",
+    "C003"
+  ],
+  "Asignado_a": [
+    "agent_3"
+  ],
+  "Prioridad": "high",
+  "Comentarios": []
+},
+{
+  "_id": {
+    "$oid": "693043d0d541bf2e043b1cd2"
+  },
+  "Tid": "T007",
+  "Nombre": "No permite iniciar sesión",
+  "Descripcion": "Usuario reporta problemas de login en el sistema.",
+  "Estado": "open",
+  "Creado_en": {
+    "$date": "2025-01-05T09:10:00.000Z"
+  },
+  "Ultima_actualizacion": {
+    "$date": "2025-01-16T11:00:00.000Z"
+  },
+  "Path": [
+    "C000",
+    "C001",
+    "C004"
+  ],
+  "Asignado_a": [
+    "agent_1"
+  ],
+  "Prioridad": "medium",
+  "Comentarios": []
+},
+{
+  "_id": {
+    "$oid": "693043e8d541bf2e043b1cdb"
+  },
+  "Tid": "T008",
+  "Nombre": "Falla en facturación automática",
+  "Descripcion": "Cálculo incorrecto en módulo de facturación.",
+  "Estado": "rejected",
+  "Creado_en": {
+    "$date": "2024-12-28T10:00:00.000Z"
+  },
+  "Ultima_actualizacion": {
+    "$date": "2025-01-20T17:45:00.000Z"
+  },
+  "Path": [
+    "C000",
+    "C002",
+    "C005"
+  ],
+  "Asignado_a": [
+    "agent_9"
+  ],
+  "Prioridad": "high",
+  "Comentarios": []
+},
+{
+  "_id": {
+    "$oid": "69304408d541bf2e043b1ce3"
+  },
+  "Tid": "T009",
+  "Nombre": "Error en carga de reportes",
+  "Descripcion": "Reporte mensual no genera PDF.",
+  "Estado": "closed",
+  "Creado_en": {
+    "$date": "2025-01-02T08:10:00.000Z"
+  },
+  "Ultima_actualizacion": {
+    "$date": "2025-01-18T16:30:00.000Z"
+  },
+  "Path": [
+    "C000",
+    "C001",
+    "C004"
+  ],
+  "Asignado_a": [
+    "agent_2"
+  ],
+  "Prioridad": "medium",
+  "Comentarios": []
+},
+{
+  "_id": {
+    "$oid": "69304427d541bf2e043b1cec"
+  },
+  "Tid": "T010",
+  "Nombre": "No se envían correos automáticos",
+  "Descripcion": "Sistema no dispara notificaciones.",
+  "Estado": "in_progress",
+  "Creado_en": {
+    "$date": "2025-01-03T11:20:00.000Z"
+  },
+  "Ultima_actualizacion": {
+    "$date": "2025-01-22T15:40:00.000Z"
+  },
+  "Path": [
+    "C000",
+    "C002",
+    "C005"
+  ],
+  "Asignado_a": [
+    "agent_10"
+  ],
+  "Prioridad": "high",
+  "Comentarios": []
+}]

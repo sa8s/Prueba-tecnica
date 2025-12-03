@@ -1,0 +1,972 @@
+[{
+  "_id": {
+    "$oid": "69304191d541bf2e043b1c88"
+  },
+  "Aid": "A001",
+  "TicketId": "T001",
+  "Tipo_de_accion": "Creación de Ticket",
+  "From": [],
+  "To": "open",
+  "Fecha": {
+    "$date": "2025-01-02T08:20:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304191d541bf2e043b1c89"
+  },
+  "Aid": "A002",
+  "TicketId": "T001",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "open",
+  "To": "closed",
+  "Fecha": {
+    "$date": "2025-01-03T10:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304191d541bf2e043b1c8a"
+  },
+  "Aid": "A003",
+  "TicketId": "T001",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "closed",
+  "To": "in_progress",
+  "Fecha": {
+    "$date": "2025-01-04T09:30:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304199d541bf2e043b1c8d"
+  },
+  "Aid": "A005",
+  "TicketId": "T002",
+  "Tipo_de_accion": "Creación de Ticket",
+  "From": [],
+  "To": "open",
+  "Fecha": {
+    "$date": "2025-01-03T10:40:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304199d541bf2e043b1c8e"
+  },
+  "Aid": "A006",
+  "TicketId": "T002",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "open",
+  "To": "closed",
+  "Fecha": {
+    "$date": "2025-01-04T12:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304199d541bf2e043b1c8f"
+  },
+  "Aid": "A007",
+  "TicketId": "T002",
+  "Tipo_de_accion": "Cambio de estado (Reapertura)",
+  "From": "closed",
+  "To": "in_progress",
+  "Fecha": {
+    "$date": "2025-01-05T14:30:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "693041a1d541bf2e043b1c92"
+  },
+  "Aid": "A009",
+  "TicketId": "T003",
+  "Tipo_de_accion": "Creación de Ticket",
+  "From": [],
+  "To": "open",
+  "Fecha": {
+    "$date": "2025-01-04T09:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "693041a1d541bf2e043b1c93"
+  },
+  "Aid": "A010",
+  "TicketId": "T003",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "open",
+  "To": "rejected",
+  "Fecha": {
+    "$date": "2025-01-05T10:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "693041a1d541bf2e043b1c94"
+  },
+  "Aid": "A011",
+  "TicketId": "T003",
+  "Tipo_de_accion": "Cambio de estado (Reapertura)",
+  "From": "rejected",
+  "To": "open",
+  "Fecha": {
+    "$date": "2025-01-06T08:45:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "693041a1d541bf2e043b1c95"
+  },
+  "Aid": "A012",
+  "TicketId": "T003",
+  "Tipo_de_accion": "Cambio_clasificacion",
+  "From": [
+    "C000",
+    "C001",
+    "C004"
+  ],
+  "To": [
+    "C000",
+    "C001",
+    "C003",
+    "C006"
+  ],
+  "Fecha": {
+    "$date": "2025-01-07T11:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "693041f3d541bf2e043b1c97"
+  },
+  "Aid": "A004",
+  "TicketId": "T004",
+  "Tipo_de_accion": "Creación de Ticket",
+  "From": [],
+  "To": "open",
+  "Fecha": {
+    "$date": "2024-03-02T09:15:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "693041f3d541bf2e043b1c98"
+  },
+  "Aid": "A022",
+  "TicketId": "T004",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "open",
+  "To": "in_progress",
+  "Fecha": {
+    "$date": "2024-03-03T14:20:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "693041f3d541bf2e043b1c99"
+  },
+  "Aid": "A023",
+  "TicketId": "T004",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "in_progress",
+  "To": "closed",
+  "Fecha": {
+    "$date": "2024-03-05T11:05:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "693041f3d541bf2e043b1c9a"
+  },
+  "Aid": "A008",
+  "TicketId": "T004",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "closed",
+  "To": "open",
+  "Fecha": {
+    "$date": "2024-03-07T16:40:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304209d541bf2e043b1c9d"
+  },
+  "Aid": "A014",
+  "TicketId": "T005",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "open",
+  "To": "in_progress",
+  "Fecha": {
+    "$date": "2024-04-02T12:45:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304209d541bf2e043b1c9e"
+  },
+  "Aid": "A018",
+  "TicketId": "T005",
+  "Tipo_de_accion": "Cambio_clasificacion",
+  "From": [
+    "C000",
+    "C001",
+    "C004"
+  ],
+  "To": [
+    "C000",
+    "C002",
+    "C005"
+  ],
+  "Fecha": {
+    "$date": "2024-04-03T09:30:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304209d541bf2e043b1c9f"
+  },
+  "Aid": "A026",
+  "TicketId": "T005",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "in_progress",
+  "To": "closed",
+  "Fecha": {
+    "$date": "2024-04-04T18:10:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304214d541bf2e043b1ca1"
+  },
+  "Aid": "A013",
+  "TicketId": "T005",
+  "Tipo_de_accion": "Creación de Ticket",
+  "From": [],
+  "To": "open",
+  "Fecha": {
+    "$date": "2024-04-01T10:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6930423cd541bf2e043b1ca8"
+  },
+  "Aid": "A030",
+  "TicketId": "T006",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "open",
+  "To": "rejected",
+  "Fecha": {
+    "$date": "2024-05-11T10:25:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6930423cd541bf2e043b1ca9"
+  },
+  "Aid": "A031",
+  "TicketId": "T006",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "rejected",
+  "To": "open",
+  "Fecha": {
+    "$date": "2024-05-12T15:40:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6930423cd541bf2e043b1caa"
+  },
+  "Aid": "A032",
+  "TicketId": "T006",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "open",
+  "To": "closed",
+  "Fecha": {
+    "$date": "2024-05-14T13:15:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6930423cd541bf2e043b1cab"
+  },
+  "Aid": "A033",
+  "TicketId": "T006",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "closed",
+  "To": "in_progress",
+  "Fecha": {
+    "$date": "2024-05-15T09:50:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304249d541bf2e043b1cae"
+  },
+  "Aid": "A035",
+  "TicketId": "T007",
+  "Tipo_de_accion": "Cambio de prioridad",
+  "From": "medium",
+  "To": "high",
+  "Fecha": {
+    "$date": "2024-06-02T10:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304249d541bf2e043b1caf"
+  },
+  "Aid": "A036",
+  "TicketId": "T007",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "open",
+  "To": "in_progress",
+  "Fecha": {
+    "$date": "2024-06-03T13:45:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304249d541bf2e043b1cb0"
+  },
+  "Aid": "A037",
+  "TicketId": "T007",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "in_progress",
+  "To": "closed",
+  "Fecha": {
+    "$date": "2024-06-04T09:30:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304254d541bf2e043b1cb2"
+  },
+  "Aid": "A038",
+  "TicketId": "T008",
+  "Tipo_de_accion": "Creación de Ticket",
+  "From": [],
+  "To": "open",
+  "Fecha": {
+    "$date": "2024-07-10T09:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304254d541bf2e043b1cb3"
+  },
+  "Aid": "A039",
+  "TicketId": "T008",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "open",
+  "To": "closed",
+  "Fecha": {
+    "$date": "2024-07-12T11:20:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304254d541bf2e043b1cb4"
+  },
+  "Aid": "A040",
+  "TicketId": "T008",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "closed",
+  "To": "open",
+  "Fecha": {
+    "$date": "2024-07-14T14:55:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304254d541bf2e043b1cb5"
+  },
+  "Aid": "A041",
+  "TicketId": "T008",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "open",
+  "To": "in_progress",
+  "Fecha": {
+    "$date": "2024-07-15T09:40:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304284d541bf2e043b1cb7"
+  },
+  "Aid": "A042",
+  "TicketId": "T009",
+  "Tipo_de_accion": "Creación de Ticket",
+  "From": [],
+  "To": "open",
+  "Fecha": {
+    "$date": "2024-08-05T08:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304284d541bf2e043b1cb8"
+  },
+  "Aid": "A043",
+  "TicketId": "T009",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "open",
+  "To": "rejected",
+  "Fecha": {
+    "$date": "2024-08-06T12:45:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304284d541bf2e043b1cb9"
+  },
+  "Aid": "A044",
+  "TicketId": "T009",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "rejected",
+  "To": "open",
+  "Fecha": {
+    "$date": "2024-08-07T16:15:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6930428ed541bf2e043b1cbb"
+  },
+  "Aid": "A045",
+  "TicketId": "T010",
+  "Tipo_de_accion": "Creación de Ticket",
+  "From": [],
+  "To": "open",
+  "Fecha": {
+    "$date": "2024-09-01T09:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6930428ed541bf2e043b1cbc"
+  },
+  "Aid": "A046",
+  "TicketId": "T010",
+  "Tipo_de_accion": "Cambio_de_clasificacion",
+  "From": [
+    "C000",
+    "C001",
+    "C004"
+  ],
+  "To": [
+    "C000",
+    "C002",
+    "C005"
+  ],
+  "Fecha": {
+    "$date": "2024-09-02T14:20:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6930428ed541bf2e043b1cbd"
+  },
+  "Aid": "A047",
+  "TicketId": "T010",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "open",
+  "To": "closed",
+  "Fecha": {
+    "$date": "2024-09-03T10:15:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6930428ed541bf2e043b1cbe"
+  },
+  "Aid": "A048",
+  "TicketId": "T010",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "closed",
+  "To": "in_progress",
+  "Fecha": {
+    "$date": "2024-09-04T11:30:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "693043c1d541bf2e043b1ccc"
+  },
+  "Aid": "A015",
+  "TicketId": "T006",
+  "Tipo_de_accion": "Creación de Ticket",
+  "From": [],
+  "To": "open",
+  "Fecha": {
+    "$date": "2025-01-10T08:40:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "693043c1d541bf2e043b1ccd"
+  },
+  "Aid": "A016",
+  "TicketId": "T006",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "open",
+  "To": "in_progress",
+  "Fecha": {
+    "$date": "2025-01-10T10:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "693043c1d541bf2e043b1cce"
+  },
+  "Aid": "A017",
+  "TicketId": "T006",
+  "Tipo_de_accion": "Cambio_de_clasificacion",
+  "From": [
+    "C000",
+    "C001",
+    "C003"
+  ],
+  "To": [
+    "C000",
+    "C001",
+    "C004"
+  ],
+  "Fecha": {
+    "$date": "2025-01-12T15:25:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "693043dad541bf2e043b1cd5"
+  },
+  "Aid": "A019",
+  "TicketId": "T007",
+  "Tipo_de_accion": "Creación de Ticket",
+  "From": [],
+  "To": "open",
+  "Fecha": {
+    "$date": "2025-01-05T09:10:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "693043dad541bf2e043b1cd6"
+  },
+  "Aid": "A020",
+  "TicketId": "T007",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "open",
+  "To": "closed",
+  "Fecha": {
+    "$date": "2025-01-06T14:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "693043dad541bf2e043b1cd7"
+  },
+  "Aid": "A021",
+  "TicketId": "T007",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "closed",
+  "To": "open",
+  "Fecha": {
+    "$date": "2025-01-15T10:30:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "693043f3d541bf2e043b1cdf"
+  },
+  "Aid": "A024",
+  "TicketId": "T008",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "open",
+  "To": "in_progress",
+  "Fecha": {
+    "$date": "2025-01-02T13:50:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "693043f3d541bf2e043b1ce0"
+  },
+  "Aid": "A025",
+  "TicketId": "T008",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "in_progress",
+  "To": "rejected",
+  "Fecha": {
+    "$date": "2025-01-20T17:45:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6930441dd541bf2e043b1ce7"
+  },
+  "Aid": "A027",
+  "TicketId": "T009",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "open",
+  "To": "in_progress",
+  "Fecha": {
+    "$date": "2025-01-05T09:20:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6930441dd541bf2e043b1ce8"
+  },
+  "Aid": "A028",
+  "TicketId": "T009",
+  "Tipo_de_accion": "Cambio_de_clasificacion",
+  "From": [
+    "C000",
+    "C001",
+    "C004"
+  ],
+  "To": [
+    "C000",
+    "C002",
+    "C005"
+  ],
+  "Fecha": {
+    "$date": "2025-01-12T11:15:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6930441dd541bf2e043b1ce9"
+  },
+  "Aid": "A029",
+  "TicketId": "T009",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "in_progress",
+  "To": "closed",
+  "Fecha": {
+    "$date": "2025-01-18T16:30:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304430d541bf2e043b1cf0"
+  },
+  "Aid": "A034",
+  "TicketId": "T010",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "open",
+  "To": "in_progress",
+  "Fecha": {
+    "$date": "2025-01-04T09:10:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304430d541bf2e043b1cf1"
+  },
+  "Aid": "A049",
+  "TicketId": "T010",
+  "Tipo_de_accion": "Cambio_de_clasificacion",
+  "From": [
+    "C000",
+    "C002",
+    "C005"
+  ],
+  "To": [
+    "C000",
+    "C001",
+    "C004"
+  ],
+  "Fecha": {
+    "$date": "2025-01-10T13:55:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304c85d541bf2e043b1cf7"
+  },
+  "Aid": "A050",
+  "TicketId": "T004",
+  "Tipo_de_accion": "Cambio de nombre",
+  "From": "Problema en modem",
+  "To": "Modem no sincroniza luz WAN",
+  "Fecha": {
+    "$date": "2025-01-10T09:15:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304c85d541bf2e043b1cf8"
+  },
+  "Aid": "A051",
+  "TicketId": "T004",
+  "Tipo_de_accion": "Cambio de descripción",
+  "From": "Cliente reportó intermitencia",
+  "To": "Cliente indica que la luz WAN parpadea cada 2 segundos",
+  "Fecha": {
+    "$date": "2025-01-10T09:20:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304c85d541bf2e043b1cf9"
+  },
+  "Aid": "A052",
+  "TicketId": "T004",
+  "Tipo_de_accion": "Cambio de asignación",
+  "From": "agent_03",
+  "To": "agent_11",
+  "Fecha": {
+    "$date": "2025-01-10T09:25:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304c85d541bf2e043b1cfa"
+  },
+  "Aid": "A053",
+  "TicketId": "T005",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "open",
+  "To": "closed",
+  "Fecha": {
+    "$date": "2025-01-11T14:02:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304c85d541bf2e043b1cfb"
+  },
+  "Aid": "A054",
+  "TicketId": "T005",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "closed",
+  "To": "open",
+  "Fecha": {
+    "$date": "2025-01-12T08:44:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304c85d541bf2e043b1cfc"
+  },
+  "Aid": "A055",
+  "TicketId": "T005",
+  "Tipo_de_accion": "Cambio de asignación",
+  "From": "agent_07",
+  "To": "agent_02",
+  "Fecha": {
+    "$date": "2025-01-12T09:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304c85d541bf2e043b1cfd"
+  },
+  "Aid": "A056",
+  "TicketId": "T006",
+  "Tipo_de_accion": "Cambio de descripción",
+  "From": "Cliente indica lentitud",
+  "To": "Cliente indica lentitud especialmente en videollamadas",
+  "Fecha": {
+    "$date": "2025-01-15T10:10:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304c85d541bf2e043b1cfe"
+  },
+  "Aid": "A057",
+  "TicketId": "T006",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "in_progress",
+  "To": "closed",
+  "Fecha": {
+    "$date": "2025-01-15T17:30:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304c85d541bf2e043b1cff"
+  },
+  "Aid": "A058",
+  "TicketId": "T006",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "closed",
+  "To": "in_progress",
+  "Fecha": {
+    "$date": "2025-01-16T08:01:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304c85d541bf2e043b1d00"
+  },
+  "Aid": "A059",
+  "TicketId": "T006",
+  "Tipo_de_accion": "Cambio de asignación",
+  "From": "agent_05",
+  "To": "agent_09",
+  "Fecha": {
+    "$date": "2025-01-16T08:10:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304c85d541bf2e043b1d01"
+  },
+  "Aid": "A060",
+  "TicketId": "T007",
+  "Tipo_de_accion": "Cambio de nombre",
+  "From": "Error en sistema",
+  "To": "Error al iniciar sesión en CRM",
+  "Fecha": {
+    "$date": "2025-01-18T07:30:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304c85d541bf2e043b1d02"
+  },
+  "Aid": "A061",
+  "TicketId": "T007",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "open",
+  "To": "closed",
+  "Fecha": {
+    "$date": "2025-01-18T09:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304c85d541bf2e043b1d03"
+  },
+  "Aid": "A062",
+  "TicketId": "T007",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "closed",
+  "To": "open",
+  "Fecha": {
+    "$date": "2025-01-19T11:12:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304c85d541bf2e043b1d04"
+  },
+  "Aid": "A063",
+  "TicketId": "T008",
+  "Tipo_de_accion": "Cambio de descripción",
+  "From": "Falla en router",
+  "To": "Router no permite acceso remoto",
+  "Fecha": {
+    "$date": "2025-01-20T13:25:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304c85d541bf2e043b1d05"
+  },
+  "Aid": "A064",
+  "TicketId": "T008",
+  "Tipo_de_accion": "Cambio de asignación",
+  "From": "agent_02",
+  "To": "agent_10",
+  "Fecha": {
+    "$date": "2025-01-20T14:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304c85d541bf2e043b1d06"
+  },
+  "Aid": "A065",
+  "TicketId": "T008",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "in_progress",
+  "To": "closed",
+  "Fecha": {
+    "$date": "2025-01-20T15:40:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304c85d541bf2e043b1d07"
+  },
+  "Aid": "A066",
+  "TicketId": "T009",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "open",
+  "To": "rejected",
+  "Fecha": {
+    "$date": "2025-01-22T10:10:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304c85d541bf2e043b1d08"
+  },
+  "Aid": "A067",
+  "TicketId": "T009",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "rejected",
+  "To": "open",
+  "Fecha": {
+    "$date": "2025-01-22T12:30:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304c85d541bf2e043b1d09"
+  },
+  "Aid": "A068",
+  "TicketId": "T009",
+  "Tipo_de_accion": "Cambio de asignación",
+  "From": "agent_04",
+  "To": "agent_06",
+  "Fecha": {
+    "$date": "2025-01-22T12:45:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304c85d541bf2e043b1d0a"
+  },
+  "Aid": "A069",
+  "TicketId": "T010",
+  "Tipo_de_accion": "Cambio de nombre",
+  "From": "Problema de impresión",
+  "To": "Impresora imprime con líneas",
+  "Fecha": {
+    "$date": "2025-01-25T09:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69304c85d541bf2e043b1d0b"
+  },
+  "Aid": "A070",
+  "TicketId": "T010",
+  "Tipo_de_accion": "Cambio de descripción",
+  "From": "Impresora deja líneas",
+  "To": "Impresora deja líneas horizontales en documentos PDF",
+  "Fecha": {
+    "$date": "2025-01-25T09:10:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69305b570670174008f11939"
+  },
+  "Aid": "A072",
+  "TicketId": "T002",
+  "Tipo_de_accion": "Cambio de estado",
+  "From": "in_progress",
+  "To": "closed",
+  "Fecha": {
+    "$date": "2025-12-03T15:46:31.447Z"
+  }
+}]
